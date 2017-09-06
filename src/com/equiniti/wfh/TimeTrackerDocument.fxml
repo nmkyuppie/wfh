@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="400" prefWidth="600" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.equiniti.wfh.TimeTrackerController">
+    <children>
+        <Button fx:id="button" layoutX="18.0" layoutY="338.0" onAction="#handleButtonAction" styleClass="buttonActive" stylesheets="@style.css" text="Start" textFill="WHITE" />
+        <Button fx:id="breakButton" layoutX="177.0" layoutY="338.0" onAction="#handleButtonAction" styleClass="buttonInActive" stylesheets="@style.css" text="Break" textFill="WHITE" />
+        <Button fx:id="reportButton" layoutX="349.0" layoutY="338.0" onAction="#handleButtonAction" styleClass="buttonActive" stylesheets="@style.css" text="Report" textFill="WHITE" />
+        <Button fx:id="stopButton" layoutX="512.0" layoutY="338.0" onAction="#handleButtonAction" styleClass="buttonInActive" stylesheets="@style.css" text="Stop" textFill="WHITE" />
+        <Label fx:id="label" layoutX="126" layoutY="120" minHeight="16" minWidth="69" />
+        <Label alignment="CENTER_RIGHT" layoutX="196.0" layoutY="22.0" text="WFH Time Tracker" textAlignment="CENTER" textFill="#004d40">
+            <font>
+                <Font name="System Bold" size="24.0" />
+            </font>
+        </Label>
+        <Label layoutX="20.0" layoutY="100.0" text="Clock In" textFill="#004d40">
+            <font>
+                <Font name="System Bold" size="16.0" />
+            </font>
+        </Label>
+        <Label layoutX="300.0" layoutY="100.0" text="Clock Out" textFill="#004d40">
+            <font>
+                <Font name="System Bold" size="16.0" />
+            </font>
+        </Label>
+        <Pane layoutX="201.0" layoutY="137.0" prefHeight="47.0" prefWidth="200.0" />
+        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#004d40" height="47.0" layoutX="201.0" layoutY="137.0" stroke="#004d40" strokeType="INSIDE" width="200.0" />
+        <Label layoutX="252.0" layoutY="148.0" text="Effective Hour" textFill="WHITE">
+            <font>
+                <Font name="System Bold" size="16.0" />
+            </font>
+        </Label>
+        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#00897b" height="75.0" layoutX="201.0" layoutY="184.0" stroke="#00897b" strokeType="INSIDE" width="200.0" />
+        <Label layoutX="272.0" layoutY="206.0" text="07:44" textFill="WHITE">
+            <font>
+                <Font name="System Bold" size="22.0" />
+            </font>
+        </Label>
+        <Label layoutX="118.0" layoutY="100.0" text="09/05/2017 1:52 PM" textFill="#00897b">
+            <font>
+                <Font name="System Bold" size="16.0" />
+            </font>
+        </Label>
+        <Label layoutX="416.0" layoutY="100.0" text="09/05/2017 1:52 PM" textFill="#00897b">
+            <font>
+                <Font name="System Bold" size="16.0" />
+            </font>
+        </Label>
+        <Label layoutX="20.0" layoutY="285.0" text="Break hour" textFill="#004d40">
+            <font>
+                <Font name="System Bold" size="16.0" />
+            </font>
+        </Label>
+        <Label layoutX="132.0" layoutY="285.0" text="02 : 45 (HH:MM)" textFill="#00897b">
+            <font>
+                <Font name="System Bold" size="16.0" />
+            </font>
+        </Label>
+        <Label layoutX="306.0" layoutY="285.0" text="Idle Hour" textFill="#004d40">
+            <font>
+                <Font name="System Bold" size="16.0" />
+            </font>
+        </Label>
+        <Label layoutX="416.0" layoutY="285.0" text="01 : 12 (HH:MM)" textFill="#00897b">
+            <font>
+                <Font name="System Bold" size="16.0" />
+            </font>
+        </Label>
+    </children>
+</AnchorPane>

@@ -1,0 +1,25 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Sep 5, 2017, 3:07:23 PM
+    Author     : nachimm
+*/
+
+.root {
+    
+}
+
+.buttonActive {
+    -fx-text-fill: white;
+    -fx-font-size: 18px;
+    -fx-background-color: #004d40;
+}
+
+.buttonInActive {
+    -fx-text-fill: white;
+    -fx-font-size: 18px;
+    -fx-background-color: #00897b;
+}
