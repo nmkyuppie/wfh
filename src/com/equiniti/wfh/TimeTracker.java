@@ -5,6 +5,8 @@
  */
 package com.equiniti.wfh;
 
+import com.equiniti.wfh.util.Win32IdleTime;
+import com.equiniti.wfh.util.WindowMonitorThread;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -16,14 +18,16 @@ import javafx.stage.Stage;
  * @author nachimm
  */
 public class TimeTracker extends Application {
-    
+
     @Override
     public void start(Stage stage) throws Exception {
+        WindowMonitorThread wmt=new WindowMonitorThread();
+        wmt.start();
         Parent root = FXMLLoader.load(getClass().getResource("TimeTrackerDocument.fxml"));
-        
+
         Scene scene = new Scene(root);
-        
-scene.getStylesheets().add(TimeTracker.class.getResource("style.css").toExternalForm());
+
+        scene.getStylesheets().add(TimeTracker.class.getResource("style.css").toExternalForm());
         stage.setScene(scene);
         stage.show();
     }
@@ -34,5 +38,5 @@ scene.getStylesheets().add(TimeTracker.class.getResource("style.css").toExternal
     public static void main(String[] args) {
         launch(args);
     }
-    
+
 }
