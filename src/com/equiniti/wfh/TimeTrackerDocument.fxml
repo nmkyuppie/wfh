@@ -9,7 +9,7 @@
 <AnchorPane id="AnchorPane" prefHeight="400" prefWidth="650.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.equiniti.wfh.TimeTrackerController">
     <children>
         <Button fx:id="startButton" disable="false" layoutX="40.0" layoutY="339.0" onAction="#startButtonAction" styleClass="buttonActive" stylesheets="@style.css" text="Start" textFill="WHITE" />
-        <Button fx:id="breakButton" disable="true" layoutX="200.0" layoutY="339.0" onAction="#breakButtonAction" styleClass="buttonInActive" stylesheets="@style.css" text="Break" textFill="WHITE" />
+        <Button fx:id="breakButton" disable="true" layoutX="180.0" layoutY="339.0" onAction="#breakButtonAction" styleClass="buttonInActive" stylesheets="@style.css" text="Break" textFill="WHITE" />
         <Button fx:id="reportButton" disable="false" layoutX="370.0" layoutY="339.0" onAction="#reportButtonAction" styleClass="buttonActive" stylesheets="@style.css" text="Report" textFill="WHITE" />
         <Button fx:id="stopButton" disable="true" layoutX="540.0" layoutY="339.0" onAction="#stopButtonAction" styleClass="buttonInActive" stylesheets="@style.css" text="Stop" textFill="WHITE" />
         <Label alignment="CENTER_RIGHT" layoutX="226.0" layoutY="23.0" text="WFH Time Tracker" textAlignment="CENTER" textFill="#004d40">
@@ -38,16 +38,16 @@
             </font>
         </Label>
         <Pane layoutX="201.0" layoutY="137.0" prefHeight="47.0" prefWidth="200.0" />
-        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#004d40" height="47.0" layoutX="231.0" layoutY="138.0" stroke="#004d40" strokeType="INSIDE" width="200.0" />
-        <Label layoutX="282.0" layoutY="149.0" text="Effective Hour" textFill="WHITE">
+        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#004d40" height="50.0" layoutX="215.0" layoutY="138.0" stroke="#004d40" strokeType="INSIDE" width="220.0" />
+        <Label layoutX="271.0" layoutY="148.0" text="Effective Hour" textFill="WHITE">
             <font>
                 <Font name="System Bold" size="16.0" />
             </font>
         </Label>
-        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#00897b" height="75.0" layoutX="231.0" layoutY="185.0" stroke="#00897b" strokeType="INSIDE" width="200.0" />
-        <Label fx:id="effectiveHourCounterLabel" layoutX="277.0" layoutY="207.0" text="00 : 00 : 00" textFill="WHITE">
+        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#00897b" height="75.0" layoutX="215.0" layoutY="188.0" stroke="#00897b" strokeType="INSIDE" width="220.0" />
+        <Label fx:id="effectiveHourCounterLabel" layoutX="233.0" layoutY="199.0" text="00 : 00 : 00" textFill="WHITE">
             <font>
-                <Font name="System Bold" size="22.0" />
+                <Font name="System Bold" size="36.0" />
             </font>
         </Label>
         <Label layoutX="40.0" layoutY="286.0" text="Break hour" textFill="#00897b">

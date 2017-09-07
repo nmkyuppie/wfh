@@ -7,7 +7,11 @@ package com.equiniti.wfh;
 
 import com.equiniti.wfh.util.Win32IdleTime;
 import com.equiniti.wfh.util.WindowMonitorThread;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -19,16 +23,22 @@ import javafx.stage.Stage;
  */
 public class TimeTracker extends Application {
 
+    TimeTrackerController controller;
+
     @Override
     public void start(Stage stage) throws Exception {
         WindowMonitorThread wmt=new WindowMonitorThread();
         wmt.start();
-        Parent root = FXMLLoader.load(getClass().getResource("TimeTrackerDocument.fxml"));
+            FXMLLoader loader = new FXMLLoader();
+        Parent root = loader.load(getClass().getResource("TimeTrackerDocument.fxml"));
 
         Scene scene = new Scene(root);
 
         scene.getStylesheets().add(TimeTracker.class.getResource("style.css").toExternalForm());
         stage.setScene(scene);
+        controller = loader.getController();
+        stage.setResizable(false);
+        stage.setAlwaysOnTop(true);
         stage.show();
     }
 
@@ -38,5 +48,14 @@ public class TimeTracker extends Application {
     public static void main(String[] args) {
         launch(args);
     }
+
+    @Override
+    public void stop(){
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss a");
+        Date stopDate = new Date();
+        System.out.println("Stop Date : " + dateFormat.format(stopDate));
+        //controller. - Stop Event, If there is no previous stop
+    }
+
 
 }
