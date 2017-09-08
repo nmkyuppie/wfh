@@ -59,6 +59,9 @@ public class TimeTrackerController implements Initializable {
     private Label effectiveHourCounterLabel;
 
     boolean isTimerActive;
+    private static int startButtonClickCount = 0;
+    long effectiveHours = 0, effectiveMinutes = 0, effectiveSeconds = 0;
+    long currentDiffHours = 0, currentDiffMinutes = 0, currentDiffSeconds = 0;
 
     @FXML
     private void startButtonAction(ActionEvent event) {
@@ -67,12 +70,22 @@ public class TimeTrackerController implements Initializable {
         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss a");
         Date startDate = new Date();
         System.out.println("Start Date : " + dateFormat.format(startDate));
-        clockInLabel.setText(dateFormat.format(startDate));
+        if (startButtonClickCount < 1) {
+            clockInLabel.setText(dateFormat.format(startDate));
+            startButtonClickCount++;
+        } else {
+            clockOutLabel.setText("");
+        }
         initializeDashboard(startDate);
     }
 
     @FXML
     private void stopButtonAction(ActionEvent event) {
+        effectiveHours += currentDiffHours;
+        effectiveMinutes += currentDiffMinutes;
+        effectiveSeconds += currentDiffSeconds;
+        effectiveSeconds = effectiveSeconds % 60;
+        effectiveMinutes = effectiveMinutes % 60;
         isTimerActive = false;
         resetButtonStyles("STOP");
         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss a");
@@ -84,7 +97,32 @@ public class TimeTrackerController implements Initializable {
 
     @FXML
     private void breakButtonAction(ActionEvent event) {
-        System.out.println("You clicked me!");
+        if (breakButton.getText().equalsIgnoreCase("Break")) {
+            effectiveHours += currentDiffHours;
+            effectiveMinutes += currentDiffMinutes;
+            effectiveSeconds += currentDiffSeconds;
+            effectiveSeconds = effectiveSeconds % 60;
+            effectiveMinutes = effectiveMinutes % 60;
+            isTimerActive = false;
+            DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss a");
+            Date startDate = new Date();
+            System.out.println("Break Start Date : " + dateFormat.format(startDate));
+            resetButtonStyles("BREAK");
+        } else {
+            isTimerActive = true;
+            resetButtonStyles("CONTINUE");
+            DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss a");
+            Date startDate = new Date(
+            );
+            System.out.println("Break End Date : " + dateFormat.format(startDate));
+            if (startButtonClickCount < 1) {
+                clockInLabel.setText(dateFormat.format(startDate));
+                startButtonClickCount++;
+            } else {
+                clockOutLabel.setText("");
+            }
+            initializeDashboard(startDate);
+        }
     }
 
     @FXML
@@ -123,7 +161,7 @@ public class TimeTrackerController implements Initializable {
     }
 
     private void resetButtonStyles(String button) {
-        if (button.equalsIgnoreCase("start")) {
+        if (button.equalsIgnoreCase("START")) {
             startButton.setDisable(true);
             stopButton.setDisable(false);
             breakButton.setDisable(false);
@@ -133,7 +171,7 @@ public class TimeTrackerController implements Initializable {
             stopButton.getStyleClass().remove("buttonInActive");
             breakButton.getStyleClass().add("buttonActive");
             breakButton.getStyleClass().remove("buttonInActive");
-        } else if (button.equalsIgnoreCase("stop")) {
+        } else if (button.equalsIgnoreCase("STOP")) {
             startButton.setDisable(false);
             stopButton.setDisable(true);
             breakButton.setDisable(true);
@@ -143,6 +181,27 @@ public class TimeTrackerController implements Initializable {
             stopButton.getStyleClass().remove("buttonActive");
             breakButton.getStyleClass().add("buttonInActive");
             breakButton.getStyleClass().remove("buttonActive");
+        } else if (button.equalsIgnoreCase("BREAK")) {
+            startButton.setDisable(true);
+            stopButton.setDisable(true);
+            breakButton.setDisable(false);
+            breakButton.setText("Continue");
+//            startButton.getStyleClass().add("buttonInActive");
+            startButton.getStyleClass().remove("buttonActive");
+            stopButton.getStyleClass().add("buttonActive");
+            stopButton.getStyleClass().remove("buttonInActive");
+            breakButton.getStyleClass().add("buttonActive");
+            breakButton.getStyleClass().remove("buttonInActive");
+        } else if (button.equalsIgnoreCase("CONTINUE")) {
+            startButton.setDisable(true);
+            stopButton.setDisable(false);
+            breakButton.setDisable(false);
+            breakButton.setText("Break");
+            startButton.getStyleClass().remove("buttonActive");
+            stopButton.getStyleClass().add("buttonActive");
+            stopButton.getStyleClass().remove("buttonInActive");
+            breakButton.getStyleClass().add("buttonActive");
+            breakButton.getStyleClass().remove("buttonInActive");
         }
     }
 
@@ -169,14 +228,21 @@ public class TimeTrackerController implements Initializable {
                                             if (isTimerActive) {
                                                 Platform.runLater(() -> {
                                                     Date currentDate = new Date();
-
                                                     long diff = currentDate.getTime() - startDate.getTime();
-                                                    long diffSeconds = diff / 1000 % 60;
-                                                    long diffMinutes = diff / (60 * 1000) % 60;
-                                                    long diffHours = diff / (60 * 60 * 1000);
-                                                    String hr = (diffHours / 10 == 0) ? "0" + diffHours : "" + diffHours;
-                                                    String min = (diffMinutes / 10 == 0) ? "0" + diffMinutes : "" + diffMinutes;
-                                                    String sec = (diffSeconds / 10 == 0) ? "0" + diffSeconds : "" + diffSeconds;
+                                                    currentDiffSeconds = diff / 1000 % 60;
+                                                    currentDiffMinutes = diff / (60 * 1000) % 60;
+                                                    currentDiffHours = diff / (60 * 60 * 1000);
+                                                    long totalHr, totalMin, totalSec;
+                                                    totalSec = currentDiffSeconds + effectiveSeconds;
+                                                    currentDiffMinutes += (totalSec / 60);
+                                                    totalSec = totalSec % 60;
+                                                    totalMin = currentDiffMinutes + effectiveMinutes;
+                                                    currentDiffHours += (totalMin / 60);
+                                                    totalMin = totalMin % 60;
+                                                    totalHr = currentDiffHours + effectiveHours;
+                                                    String hr = (totalHr / 10 == 0) ? "0" + totalHr : "" + totalHr;
+                                                    String min = (totalMin / 10 == 0) ? "0" + totalMin : "" + totalMin;
+                                                    String sec = (totalSec / 10 == 0) ? "0" + totalSec : "" + totalSec;
                                                     effectiveHourCounterLabel.setText(hr + " : " + min + " : " + sec);
                                                 });
 
@@ -184,7 +250,7 @@ public class TimeTrackerController implements Initializable {
                                                 timer.cancel();
                                             }
                                         }
-                                    }, 1000, 1000);
+                                    }, 0, 1000);
                                 } finally {
                                     latch.countDown();
                                 }
@@ -199,5 +265,4 @@ public class TimeTrackerController implements Initializable {
         };
         service.start();
     }
-
 }
