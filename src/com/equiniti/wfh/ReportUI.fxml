@@ -2,13 +2,38 @@
 
 <?import java.lang.*?>
 <?import java.net.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.effect.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" styleClass="mainFxmlClass" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.equiniti.wfh.ReportUIController">
+<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" styleClass="mainFxmlClass" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:controller="com.equiniti.wfh.ReportUIController">
     <stylesheets>
-        <URL value="@reportui.css"/>
+        <URL value="@reportui.css" />
     </stylesheets>
+   <children>
+      <BorderPane layoutX="15.0" layoutY="4.0" prefHeight="400.0" prefWidth="594.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="6.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <top>
+            <Label alignment="CENTER" contentDisplay="TOP" text="WHF Time Tracker" textAlignment="CENTER" BorderPane.alignment="CENTER">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+               <effect>
+                  <Glow>
+                     <input>
+                        <Blend />
+                     </input>
+                  </Glow>
+               </effect>
+            </Label>
+         </top>
+         <left>
+            <Label alignment="TOP_LEFT" prefHeight="8.0" prefWidth="48.0" text="History" BorderPane.alignment="CENTER">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Label>
+         </left>
+      </BorderPane>
+   </children>
 </AnchorPane>

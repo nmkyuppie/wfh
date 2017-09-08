@@ -5,6 +5,7 @@
  */
 package com.equiniti.wfh;
 
+import com.equiniti.wfh.DBConnectivity.PostgreSQLJDBC;
 import java.io.IOException;
 import java.net.URL;
 import java.text.DateFormat;
@@ -24,9 +25,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.TableView;
 import javafx.stage.Stage;
 
 /**
@@ -34,7 +34,9 @@ import javafx.stage.Stage;
  * @author nachimm
  */
 public class TimeTrackerController implements Initializable {
-
+    //TABLE VIEW AND DATA
+    private TableView tableview;
+    
     @FXML
     private Button startButton;
 
@@ -90,21 +92,30 @@ public class TimeTrackerController implements Initializable {
         System.out.println("You clicked me!");
         try {
         FXMLLoader fxmlLoader = new FXMLLoader();
-        fxmlLoader.setLocation(getClass().getResource("NewWindow.fxml"));
+        fxmlLoader.setLocation(getClass().getResource("ReportUI.fxml"));
+        buildData();
         /* 
          * if "fx:controller" is not set in fxml
          * fxmlLoader.setController(NewWindowController);
          */
         Scene scene = new Scene(fxmlLoader.load(), 600, 400);
         Stage stage = new Stage();
-        stage.setTitle("New Window");
+        stage.setTitle("Report View");
         stage.setScene(scene);
         stage.show();
     } catch (IOException e) {
         e.printStackTrace();
     }
     }
-
+    public void buildData(){
+          
+          try{
+            tableview.setItems(new PostgreSQLJDBC().getReportData());
+          }catch(Exception e){
+              e.printStackTrace();
+              System.out.println("Error on Building Data");             
+          }
+      }
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
