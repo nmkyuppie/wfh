@@ -6,16 +6,13 @@
 package com.equiniti.wfh;
 
 import com.equiniti.wfh.DBConnectivity.PostgreSQLJDBC;
-import com.equiniti.wfh.util.WindowMonitorThread;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.TableView;
 import javafx.stage.Stage;
 
 /**
@@ -30,10 +27,10 @@ public class TimeTracker extends Application {
     
     @Override
     public void start(Stage stage) throws Exception {
-        postgreSQLJDBC = new PostgreSQLJDBC();
-        WindowMonitorThread wmt=new WindowMonitorThread();
-        wmt.start();
-            FXMLLoader loader = new FXMLLoader();
+//        postgreSQLJDBC = new PostgreSQLJDBC();
+//        WindowMonitorThread wmt=new WindowMonitorThread();
+//        wmt.start();
+        FXMLLoader loader = new FXMLLoader();
         Parent root = loader.load(getClass().getResource("TimeTrackerDocument.fxml"));
 
         Scene scene = new Scene(root);

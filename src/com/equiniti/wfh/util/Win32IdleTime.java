@@ -15,28 +15,38 @@ import com.sun.jna.win32.*;
 public class Win32IdleTime {
 
     private static Win32IdleTime win32IdleTime=null;
+    State currentState = State.UNKNOWN;
     
-    private Win32IdleTime() {
+    public Win32IdleTime() {
         if (!System.getProperty("os.name").contains("Windows")) {
             System.err.println("ERROR: Only implemented on Windows");
             System.exit(1);
         }
         State state = State.UNKNOWN;
         DateFormat dateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss");
-        for (;;) {
+//        for (;;) {
             int idleSec = getIdleTimeMillisWin32() / 1000;
             State newState
                     = idleSec < 30 ? State.ONLINE
                             : idleSec > 5 * 60 ? State.AWAY : State.IDLE;
             if (newState != state) {
                 state = newState;
-                System.out.println(dateFormat.format(new Date()) + " # " + state);
+                setState(state);
+//                System.out.println(dateFormat.format(new Date()) + " # " + state);
             }
-            try {
-                Thread.sleep(1000);
-            } catch (Exception ex) {
-            }
-        }
+//            try {
+//                Thread.sleep(1000);
+//            } catch (Exception ex) {
+//            }
+//        }
+    }
+
+    public void setState(State state) {
+        currentState=state;
+    }
+
+    public State getState() {
+        return currentState;
     }
 
     public interface Kernel32 extends StdCallLibrary {
@@ -93,18 +103,25 @@ public class Win32IdleTime {
         return Kernel32.INSTANCE.GetTickCount() - lastInputInfo.dwTime;
     }
 
-    enum State {
+    public enum State {
 
         UNKNOWN, ONLINE, IDLE, AWAY
     };
 
     public static Win32IdleTime getInstance() {
+            System.out.println("qnot null");
         if(win32IdleTime!=null){
+            System.out.println("not null");
             return win32IdleTime;
         }
         else{
             win32IdleTime=new Win32IdleTime();
+            System.out.println(" null");
             return win32IdleTime;
         }
+    }
+
+    public static Win32IdleTime getInstance1() {
+            return win32IdleTime;
     }
 }
