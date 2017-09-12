@@ -40,28 +40,6 @@ import javafx.stage.Stage;
  * @author nachimm
  */
 public class TimeTrackerController implements Initializable {
-    //TABLE VIEW AND DATA
-    private TableView tableview;
-    
-    PostgreSQLJDBC postgreSQLJDBC = null;
-
-    @FXML
-    TableView<ReportData> itemTbl;
-    
-    @FXML
-    TableColumn startTimeCol;
-    
-    @FXML
-    TableColumn endTimeCol;
-    
-    @FXML
-    TableColumn typeCol;
-    
-    @FXML
-    TableColumn totalTimeCol;
-
-    // The table's observableList
-    ObservableList<ReportData> observableList;
 
     @FXML
     private Button startButton;
@@ -86,12 +64,8 @@ public class TimeTrackerController implements Initializable {
     
     TimeTrackerDAO timeTrackerDAO=new TimeTrackerDAO();
     Win32IdleTime win32IdleTime=null;
-    public TimeTrackerController() {
-        System.out.println("com.equiniti.wfh.TimeTrackerController.<init>() constructor");
-        postgreSQLJDBC = new PostgreSQLJDBC();
-    }
     
-    boolean isTimerActive;
+    boolean isTimerActive, isIdleTime;
     private static int startButtonClickCount = 0;
     long effectiveHours = 0, effectiveMinutes = 0, effectiveSeconds = 0;
     long currentDiffHours = 0, currentDiffMinutes = 0, currentDiffSeconds = 0;
@@ -149,16 +123,30 @@ public class TimeTrackerController implements Initializable {
             isTimerActive = false;
             DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss a");
             breakStartDate = new Date();
+            if(isIdleTime){
+                timeTrackerDAO.startIdleHour(breakStartDate); 
+                isSystemAwake();
+                
+            }else{
+                timeTrackerDAO.startBreak(breakStartDate);    
+            }
             timeTrackerDAO.startBreak(breakStartDate);
             breakStopDate=null;
             resetButtonStyles("BREAK");
-            isSystemAwake();
+//            isSystemAwake();
         } else {
             isTimerActive = true;
             resetButtonStyles("CONTINUE");
             DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss a");
             breakStopDate = new Date();
-            timeTrackerDAO.stopBreak(breakStopDate);
+            if(isIdleTime){
+                timeTrackerDAO.stopIdleHour(breakStopDate);  
+                isSystemAwakeTimer.cancel();
+                isIdleTime=false;
+            }else{
+                timeTrackerDAO.stopBreak(breakStopDate);  
+                isSystemAwakeTimer.cancel();
+            }
             breakStartDate=null;
             if (startButtonClickCount < 1) {
                 clockInLabel.setText(dateFormat.format(breakStopDate));
@@ -290,6 +278,7 @@ public class TimeTrackerController implements Initializable {
                                                     effectiveHourCounterLabel.setText(hr + " : " + min + " : " + sec);
                                                     Win32IdleTime win32IdleTime=new Win32IdleTime();
                                                     if(win32IdleTime.getState()==Win32IdleTime.State.IDLE){
+                                                        isIdleTime=true;
                                                         breakButtonAction(new ActionEvent());
                                                         countDownTimer.cancel();
                                                     }
@@ -336,8 +325,8 @@ public class TimeTrackerController implements Initializable {
                                             Platform.runLater(() -> {
                                                 Win32IdleTime win32IdleTime=new Win32IdleTime();
                                                 if(win32IdleTime.getState()==Win32IdleTime.State.ONLINE){
-                                                    breakButtonAction(new ActionEvent());
                                                     isSystemAwakeTimer.cancel();
+                                                    breakButtonAction(new ActionEvent());
                                                 }
                                             });
                                             

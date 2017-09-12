@@ -27,7 +27,7 @@ public class Win32IdleTime {
 //        for (;;) {
             int idleSec = getIdleTimeMillisWin32() / 1000;
             State newState
-                    = idleSec < 30 ? State.ONLINE
+                    = idleSec < 5 ? State.ONLINE
                             : idleSec > 5 * 60 ? State.AWAY : State.IDLE;
             if (newState != state) {
                 state = newState;
