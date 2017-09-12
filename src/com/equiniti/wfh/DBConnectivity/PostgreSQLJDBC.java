@@ -37,8 +37,7 @@ public class PostgreSQLJDBC {
     public List<ReportData> populateListOfTopics() {
         List<ReportData> reportDataList=new ArrayList();
         try {
-            try (Statement st = c.createStatement()) {
-                ResultSet rs = st.executeQuery("SELECT * FROM effective ORDER BY id");
+            try (Statement st = c.createStatement(); ResultSet rs = st.executeQuery("SELECT * FROM effective ORDER BY id")) {
                 while (rs.next()) {
                     ReportData rd=new ReportData();
                     rd.startTime.setValue(rs.getTimestamp("starttime"));
@@ -47,7 +46,6 @@ public class PostgreSQLJDBC {
                     rd.totalTime.setValue(rs.getTimestamp("endTime"));
                     reportDataList.add(rd);
                 }
-                rs.close();
             }
             
         } catch (SQLException se) {

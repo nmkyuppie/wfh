@@ -8,7 +8,6 @@ package com.equiniti.wfh;
 import com.equiniti.wfh.DBConnectivity.PostgreSQLJDBC;
 import com.equiniti.wfh.bean.ReportData;
 import java.net.URL;
-import java.sql.Timestamp;
 import java.util.List;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
@@ -48,21 +47,21 @@ public class ReportUIController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         System.out.println("report fxml");
-        assert itemTbl != null : "fx:id=\"tableview\" was not injected: check your FXML file 'UserMaster.fxml'.";
+        assert itemTbl != null : "fx:id=\"itemTbl\" was not injected: check your FXML file 'ReportUI.fxml'.";
         System.out.println("itemTbl "+itemTbl); 
      startTimeCol.setCellValueFactory(
-        new PropertyValueFactory<ReportData,Timestamp>("startTime"));        
+        new PropertyValueFactory<>("startTime"));        
     endTimeCol.setCellValueFactory(                
-        new PropertyValueFactory<ReportData,Timestamp>("endTime"));
+        new PropertyValueFactory<>("endTime"));
     typeCol.setCellValueFactory(
-        new PropertyValueFactory<ReportData,String>("type"));        
+        new PropertyValueFactory<>("type"));        
     totalTimeCol.setCellValueFactory(
-        new PropertyValueFactory<ReportData,Timestamp>("totalTime"));
-     ObservableList<ReportData> data=null;
-            data= FXCollections.observableArrayList();
+        new PropertyValueFactory<>("totalTime"));
+     ObservableList<ReportData> data = FXCollections.observableArrayList();
             itemTbl.setItems(data);
             List<ReportData> reportDataList = new PostgreSQLJDBC().populateListOfTopics();
             data.addAll(reportDataList);
+//            System.out.println("table.getItems().size() "+table.getItems().size());
     }
     
 }

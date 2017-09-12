@@ -1,20 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="500.0" xmlns:fx="http://javafx.com/fxml" fx:controller="com.equiniti.wfh.ReportUIController">
+<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.equiniti.wfh.ReportUIController">
   <children>
-    <Label fx:id="label" layoutX="126.0" layoutY="120.0" minHeight="16.0" minWidth="69.0" />
-    <TableView fx:id="itemTbl" layoutX="14.0" layoutY="14.0" prefHeight="334.0" prefWidth="470.0">
+    <TableView fx:id="itemTbl" layoutX="14.0" layoutY="14.0" prefHeight="350.0" prefWidth="550" styleClass="table-row-cell" stylesheets="@style.css">
       <columns>
-        <TableColumn prefWidth="75.0" text="Start Time" fx:id="startTimeCol" />
-        <TableColumn prefWidth="243.0" text="End Time" fx:id="endTimeCol" />
-        <TableColumn prefWidth="75.0" text="Type" fx:id="typeCol" />
-        <TableColumn prefWidth="175.0" text="HH:MM" fx:id="totalTimeCol" />
+        <TableColumn fx:id="startTimeCol" prefWidth="200.0" style="-fx-background-color: #004d40;-fx-text-inner-color: white;" text="Start Time" />
+        <TableColumn fx:id="endTimeCol" prefWidth="200.0" style="-fx-background-color: #004d40;-fx-text-inner-color: white;" text="End Time" />
+        <TableColumn fx:id="typeCol" prefWidth="75.0" style="-fx-background-color: #004d40;-fx-text-inner-color: white;" text="Type" />
+        <TableColumn fx:id="totalTimeCol" prefWidth="200.0" style="-fx-background-color: #004d40;-fx-text-inner-color: white;" text="HH:MM" />
       </columns>
     </TableView>
   </children>

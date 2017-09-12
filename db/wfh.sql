@@ -21,46 +21,39 @@ CREATE DATABASE wfh
     TABLESPACE = pg_default
     CONNECTION LIMIT = -1;
 
--- SCHEMA: wfhschema
+-- Table: public.timetracker
 
-DROP SCHEMA wfhschema ;
+-- DROP TABLE public.timetracker;
 
-CREATE SCHEMA wfhschema
-    AUTHORIZATION postgres;
-
--- Table: wfhschema.time_tracker
-
-DROP TABLE wfhschema.time_tracker;
-
-CREATE TABLE wfhschema.time_tracker
+CREATE TABLE public.timetracker
 (
-    timetracker_starttime time(6) with time zone,
-    timetracker_id integer NOT NULL,
-    timetracker_emp_id integer NOT NULL,
-    timetracker_endtime time(6) with time zone,
-    CONSTRAINT timetracker_primarykey PRIMARY KEY (timetracker_id)
+    id integer NOT NULL DEFAULT nextval('timetracker_id_seq1'::regclass),
+    empid integer,
+    starttime timestamp without time zone,
+    endtime timestamp without time zone,
+    CONSTRAINT timetracker_pkey PRIMARY KEY (id)
 )
 WITH (
     OIDS = FALSE
 )
 TABLESPACE pg_default;
 
-ALTER TABLE wfhschema.time_tracker
+ALTER TABLE public.timetracker
     OWNER to postgres;
 
--- Table: wfhschema.effective_hours
+-- Table: public.break
 
-DROP TABLE wfhschema.effective_hours;
+-- DROP TABLE public.break;
 
-CREATE TABLE wfhschema.effective_hours
+CREATE TABLE public.break
 (
-    effective_id integer NOT NULL,
-    effective_timetracker_id integer,
-    effective_starttime time with time zone,
-    effective_endtime time with time zone,
-    CONSTRAINT effective_hours_pkey PRIMARY KEY (effective_id),
-    CONSTRAINT effective_timetracker_foreignkey FOREIGN KEY (effective_timetracker_id)
-        REFERENCES wfhschema.time_tracker (timetracker_id) MATCH SIMPLE
+    id integer NOT NULL DEFAULT nextval('break_id_seq'::regclass),
+    timetrackerid integer,
+    starttime timestamp without time zone,
+    endtime timestamp without time zone,
+    CONSTRAINT break_pkey PRIMARY KEY (id),
+    CONSTRAINT break_timetrackerid_fkey FOREIGN KEY (timetrackerid)
+        REFERENCES public.timetracker (id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
 )
@@ -69,22 +62,22 @@ WITH (
 )
 TABLESPACE pg_default;
 
-ALTER TABLE wfhschema.effective_hours
+ALTER TABLE public.break
     OWNER to postgres;
 
--- Table: wfhschema.idle_timetracker
+-- Table: public.effective
 
-DROP TABLE wfhschema.idle_timetracker;
+-- DROP TABLE public.effective;
 
-CREATE TABLE wfhschema.idle_timetracker
+CREATE TABLE public.effective
 (
-    idle_id integer NOT NULL,
-    idle_timetracker_id integer NOT NULL,
-    idle_starttime time with time zone,
-    idle_endtime time with time zone,
-    CONSTRAINT idle_timetracker_pkey PRIMARY KEY (idle_id),
-    CONSTRAINT idle_timetracker_foreignkey FOREIGN KEY (idle_timetracker_id)
-        REFERENCES wfhschema.time_tracker (timetracker_id) MATCH SIMPLE
+    id integer NOT NULL DEFAULT nextval('effective_id_seq'::regclass),
+    timetrackerid integer,
+    starttime timestamp without time zone,
+    endtime timestamp without time zone,
+    CONSTRAINT effective_pkey PRIMARY KEY (id),
+    CONSTRAINT effective_timetrackerid_fkey FOREIGN KEY (timetrackerid)
+        REFERENCES public.timetracker (id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
 )
@@ -93,22 +86,22 @@ WITH (
 )
 TABLESPACE pg_default;
 
-ALTER TABLE wfhschema.idle_timetracker
+ALTER TABLE public.effective
     OWNER to postgres;
 
--- Table: wfhschema.break_timetracker
+-- Table: public.idle
 
-DROP TABLE wfhschema.break_timetracker;
+-- DROP TABLE public.idle;
 
-CREATE TABLE wfhschema.break_timetracker
+CREATE TABLE public.idle
 (
-    break_id integer NOT NULL,
-    break_timetracker_id integer,
-    break_starttime time with time zone,
-    break_endtime time with time zone,
-    CONSTRAINT break_timetracker_pkey PRIMARY KEY (break_id),
-    CONSTRAINT break_timetracker_foreignkey FOREIGN KEY (break_timetracker_id)
-        REFERENCES wfhschema.time_tracker (timetracker_id) MATCH SIMPLE
+    id integer NOT NULL DEFAULT nextval('idle_id_seq'::regclass),
+    timetrackerid integer,
+    starttime timestamp without time zone,
+    endtime timestamp without time zone,
+    CONSTRAINT idle_pkey PRIMARY KEY (id),
+    CONSTRAINT idle_timetrackerid_fkey FOREIGN KEY (timetrackerid)
+        REFERENCES public.timetracker (id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
 )
@@ -117,6 +110,22 @@ WITH (
 )
 TABLESPACE pg_default;
 
-ALTER TABLE wfhschema.break_timetracker
+ALTER TABLE public.idle
     OWNER to postgres;
 
+-- Table: public.settings
+
+-- DROP TABLE public.settings;
+
+CREATE TABLE public.settings
+(
+    key character varying COLLATE pg_catalog."default",
+    value character varying COLLATE pg_catalog."default"
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE public.settings
+    OWNER to postgres;
