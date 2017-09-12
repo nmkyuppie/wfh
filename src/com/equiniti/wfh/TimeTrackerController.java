@@ -6,6 +6,7 @@
 package com.equiniti.wfh;
 
 import com.equiniti.wfh.DBConnectivity.PostgreSQLJDBC;
+import com.equiniti.wfh.bean.ReportData;
 import com.equiniti.wfh.util.Win32IdleTime;
 import java.io.IOException;
 import java.net.URL;
@@ -17,6 +18,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CountDownLatch;
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
@@ -26,8 +28,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+
 import javafx.stage.Stage;
 
 /**
@@ -38,6 +43,26 @@ public class TimeTrackerController implements Initializable {
     //TABLE VIEW AND DATA
     private TableView tableview;
     
+    PostgreSQLJDBC postgreSQLJDBC = null;
+
+    @FXML
+    TableView<ReportData> itemTbl;
+    
+    @FXML
+    TableColumn startTimeCol;
+    
+    @FXML
+    TableColumn endTimeCol;
+    
+    @FXML
+    TableColumn typeCol;
+    
+    @FXML
+    TableColumn totalTimeCol;
+
+    // The table's observableList
+    ObservableList<ReportData> observableList;
+
     @FXML
     private Button startButton;
     
@@ -61,6 +86,10 @@ public class TimeTrackerController implements Initializable {
     
     TimeTrackerDAO timeTrackerDAO=new TimeTrackerDAO();
     Win32IdleTime win32IdleTime=null;
+    public TimeTrackerController() {
+        System.out.println("com.equiniti.wfh.TimeTrackerController.<init>() constructor");
+        postgreSQLJDBC = new PostgreSQLJDBC();
+    }
     
     boolean isTimerActive;
     private static int startButtonClickCount = 0;
@@ -143,31 +172,23 @@ public class TimeTrackerController implements Initializable {
     
     @FXML
     private void reportButtonAction(ActionEvent event) {
-        System.out.println("You clicked me!");
+        System.out.println("in report button");
         try {
             FXMLLoader fxmlLoader = new FXMLLoader();
             fxmlLoader.setLocation(getClass().getResource("ReportUI.fxml"));
-            buildData();
-            /*
-            * if "fx:controller" is not set in fxml
-            * fxmlLoader.setController(NewWindowController);
-            */
-            Scene scene = new Scene(fxmlLoader.load(), 600, 400);
+            Parent root = fxmlLoader.load();
+            ReportUIController reportUIController = (ReportUIController) fxmlLoader.getController();
+            Scene scene = new Scene(root, 600, 400);
             Stage stage = new Stage();
             stage.setTitle("Report View");
             stage.setScene(scene);
             stage.show();
+            /*
+            * if "fx:controller" is not set in fxml
+            * fxmlLoader.setController(NewWindowController);
+             */
         } catch (IOException e) {
             e.printStackTrace();
-        }
-    }
-    public void buildData(){
-        
-        try{
-            tableview.setItems(new PostgreSQLJDBC().getReportData());
-        }catch(Exception e){
-            e.printStackTrace();
-            System.out.println("Error on Building Data");
         }
     }
     @Override

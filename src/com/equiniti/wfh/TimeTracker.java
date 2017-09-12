@@ -5,7 +5,6 @@
  */
 package com.equiniti.wfh;
 
-import com.equiniti.wfh.DBConnectivity.PostgreSQLJDBC;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -22,8 +21,7 @@ import javafx.stage.Stage;
 public class TimeTracker extends Application {
 
     TimeTrackerController controller;
-
-    PostgreSQLJDBC postgreSQLJDBC = null;
+    Parent root;
     
     @Override
     public void start(Stage stage) throws Exception {
@@ -31,7 +29,7 @@ public class TimeTracker extends Application {
 //        WindowMonitorThread wmt=new WindowMonitorThread();
 //        wmt.start();
         FXMLLoader loader = new FXMLLoader();
-        Parent root = loader.load(getClass().getResource("TimeTrackerDocument.fxml"));
+        root = loader.load(getClass().getResource("TimeTrackerDocument.fxml"));
 
         Scene scene = new Scene(root);
 
