@@ -125,7 +125,7 @@ public class PostgreSQLJDBC {
 
     public void update(int timeTrackerId, Date date, String tableName) {
         Timestamp timestamp = new Timestamp(date.getTime());
-        String insertTableSQL = "UPDATE " + tableName + " set endtime= ? WHERE timetrackerid= ? and endtime is null";
+        String insertTableSQL = "UPDATE " + tableName + " set endtime= ? WHERE id= ? and endtime is null";
 
         try {
             System.out.println(insertTableSQL);

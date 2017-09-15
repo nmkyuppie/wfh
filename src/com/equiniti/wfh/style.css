@@ -46,7 +46,7 @@ and open the template in the editor.
     -fx-border-width: 0px;
 }
 .table-view .column-header .label {
-    -fx-background-color: #369;
+    -fx-background-color: #004d40;
     -fx-text-fill: #fff;
     -fx-font-weight: bold;
 }

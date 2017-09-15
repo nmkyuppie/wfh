@@ -37,8 +37,8 @@ class TimeTrackerDAO {
     }
 
     void stopTimeTracker(Date stopDate) {
-        postgreSQLJDBC.update(timeTrackerId, stopDate, TIMETRACKER_TABLE);
         stopEffectiveHour(stopDate);
+        postgreSQLJDBC.update(timeTrackerId, stopDate, TIMETRACKER_TABLE);
         System.out.println("Stopping session @ "+stopDate);
     }
 
