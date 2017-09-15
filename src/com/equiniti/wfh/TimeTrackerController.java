@@ -5,8 +5,6 @@
 */
 package com.equiniti.wfh;
 
-import com.equiniti.wfh.DBConnectivity.PostgreSQLJDBC;
-import com.equiniti.wfh.bean.ReportData;
 import com.equiniti.wfh.util.Win32IdleTime;
 import java.io.IOException;
 import java.net.URL;
@@ -18,7 +16,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CountDownLatch;
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
@@ -30,8 +27,6 @@ import javafx.scene.control.Label;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
 
 import javafx.stage.Stage;
 
@@ -130,7 +125,6 @@ public class TimeTrackerController implements Initializable {
             }else{
                 timeTrackerDAO.startBreak(breakStartDate);    
             }
-            timeTrackerDAO.startBreak(breakStartDate);
             breakStopDate=null;
             resetButtonStyles("BREAK");
 //            isSystemAwake();

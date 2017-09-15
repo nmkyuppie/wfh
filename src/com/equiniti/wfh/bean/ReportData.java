@@ -19,7 +19,7 @@ public class ReportData {
     public ObjectProperty<Timestamp> startTime = new SimpleObjectProperty<>();
     public ObjectProperty<Timestamp> endTime = new SimpleObjectProperty<>();
     public SimpleStringProperty type = new SimpleStringProperty();
-    public ObjectProperty<Timestamp> totalTime = new SimpleObjectProperty<>();
+    public SimpleStringProperty totalTime = new SimpleStringProperty();
 
     public Timestamp getStartTime() {
         return startTime.get();
@@ -45,11 +45,11 @@ public class ReportData {
         this.type.set(type);
     }
 
-    public Timestamp getTotalTime() {
+    public String getTotalTime() {
         return totalTime.get();
     }
 
-    public void setTotalTime(Timestamp totalTime) {
+    public void setTotalTime(String totalTime) {
         this.totalTime.set(totalTime);
     }
 

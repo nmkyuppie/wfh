@@ -22,12 +22,13 @@ public class TimeTracker extends Application {
 
     TimeTrackerController controller;
     Parent root;
-    
+    public static Stage parentWindow;
     @Override
     public void start(Stage stage) throws Exception {
 //        postgreSQLJDBC = new PostgreSQLJDBC();
 //        WindowMonitorThread wmt=new WindowMonitorThread();
 //        wmt.start();
+        parentWindow = stage;
         FXMLLoader loader = new FXMLLoader();
         root = loader.load(getClass().getResource("TimeTrackerDocument.fxml"));
 

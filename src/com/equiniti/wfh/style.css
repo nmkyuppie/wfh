@@ -36,22 +36,17 @@ and open the template in the editor.
     -fx-background-color: #004d40;
     -fx-text-fill: white;
 }
-
+.table-row-cell:empty {
+    -fx-background-color: black;
+    -fx-border-color: #004d40;
+    -fx-table-cell-border-color:#004d40;
+}
+ 
+.table-row-cell:empty .table-cell {
+    -fx-border-width: 0px;
+}
 .table-view .column-header .label {
     -fx-background-color: #369;
     -fx-text-fill: #fff;
     -fx-font-weight: bold;
 }
-.table-row-cell {
-    -fx-background: linear-gradient(white 0%, white 90%, #e0e0e0 90%);
-    -fx-selection-bar: linear-gradient(#95caff 0%, #77acff 90%, #e0e0e0 90%);
-}
-
-.table-row-cell:dtta_dep {
-    -fx-text-background-color: red;
-    -fx-background: beige;
-} 
-.table-row-cell:dtta_dest {
-    -fx-text-background-color: blue;
-    -fx-background:greenyellow;
-} 
