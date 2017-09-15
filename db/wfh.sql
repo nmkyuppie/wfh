@@ -27,7 +27,7 @@ CREATE DATABASE wfh
 
 CREATE TABLE public.timetracker
 (
-    id integer NOT NULL DEFAULT nextval('timetracker_id_seq1'::regclass),
+    id integer serial,
     empid integer,
     starttime timestamp without time zone,
     endtime timestamp without time zone,
@@ -47,7 +47,7 @@ ALTER TABLE public.timetracker
 
 CREATE TABLE public.break
 (
-    id integer NOT NULL DEFAULT nextval('break_id_seq'::regclass),
+    id integer serial,
     timetrackerid integer,
     starttime timestamp without time zone,
     endtime timestamp without time zone,
@@ -71,7 +71,7 @@ ALTER TABLE public.break
 
 CREATE TABLE public.effective
 (
-    id integer NOT NULL DEFAULT nextval('effective_id_seq'::regclass),
+    id integer serial,
     timetrackerid integer,
     starttime timestamp without time zone,
     endtime timestamp without time zone,
@@ -95,7 +95,7 @@ ALTER TABLE public.effective
 
 CREATE TABLE public.idle
 (
-    id integer NOT NULL DEFAULT nextval('idle_id_seq'::regclass),
+    id integer serial,
     timetrackerid integer,
     starttime timestamp without time zone,
     endtime timestamp without time zone,
