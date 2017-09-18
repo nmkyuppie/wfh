@@ -166,8 +166,7 @@ public class TimeTrackerController implements Initializable {
             Parent root = fxmlLoader.load();
             ReportUIController reportUIController = (ReportUIController) fxmlLoader.getController();
             Scene scene = new Scene(root, 600, 400);
-            Stage stage = new Stage();
-            stage.setTitle("Report View");
+            Stage stage = TimeTracker.parentWindow;
             stage.setScene(scene);
             stage.show();
             /*
@@ -189,43 +188,52 @@ public class TimeTrackerController implements Initializable {
             startButton.setDisable(true);
             stopButton.setDisable(false);
             breakButton.setDisable(false);
+            reportButton.setDisable(true);
             startButton.getStyleClass().add("buttonInActive");
             startButton.getStyleClass().remove("buttonActive");
             stopButton.getStyleClass().add("buttonActive");
             stopButton.getStyleClass().remove("buttonInActive");
             breakButton.getStyleClass().add("buttonActive");
             breakButton.getStyleClass().remove("buttonInActive");
+            reportButton.getStyleClass().add("buttonInActive");
+            reportButton.getStyleClass().remove("buttonActive");
         } else if (button.equalsIgnoreCase("STOP")) {
             startButton.setDisable(false);
             stopButton.setDisable(true);
             breakButton.setDisable(true);
+            reportButton.setDisable(false);
             startButton.getStyleClass().add("buttonActive");
             startButton.getStyleClass().remove("buttonInActive");
             stopButton.getStyleClass().add("buttonInActive");
             stopButton.getStyleClass().remove("buttonActive");
             breakButton.getStyleClass().add("buttonInActive");
             breakButton.getStyleClass().remove("buttonActive");
+            reportButton.getStyleClass().add("buttonActive");
+            reportButton.getStyleClass().remove("buttonInActive");
         } else if (button.equalsIgnoreCase("BREAK")) {
             startButton.setDisable(true);
             stopButton.setDisable(true);
             breakButton.setDisable(false);
             breakButton.setText("Continue");
+            reportButton.setDisable(true);
 //            startButton.getStyleClass().add("buttonInActive");
             startButton.getStyleClass().remove("buttonActive");
             stopButton.getStyleClass().add("buttonActive");
             stopButton.getStyleClass().remove("buttonInActive");
             breakButton.getStyleClass().add("buttonActive");
-            breakButton.getStyleClass().remove("buttonInActive");
+            reportButton.getStyleClass().remove("buttonActive");
         } else if (button.equalsIgnoreCase("CONTINUE")) {
             startButton.setDisable(true);
             stopButton.setDisable(false);
             breakButton.setDisable(false);
+            reportButton.setDisable(true);
             breakButton.setText("Break");
             startButton.getStyleClass().remove("buttonActive");
             stopButton.getStyleClass().add("buttonActive");
             stopButton.getStyleClass().remove("buttonInActive");
             breakButton.getStyleClass().add("buttonActive");
             breakButton.getStyleClass().remove("buttonInActive");
+            reportButton.getStyleClass().remove("buttonActive");
         }
     }
     

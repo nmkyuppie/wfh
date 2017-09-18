@@ -2,17 +2,28 @@
 
 <?import java.lang.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.effect.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.equiniti.wfh.ReportUIController">
+<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="650.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.equiniti.wfh.ReportUIController">
   <children>
-    <TableView fx:id="itemTbl" layoutX="14.0" layoutY="14.0" prefHeight="350.0" prefWidth="550" styleClass="table-row-cell" stylesheets="@style.css">
+      <Label alignment="CENTER_RIGHT" layoutX="195.0" layoutY="24.0" text="WFH Time Tracker" textAlignment="CENTER" textFill="#004d40">
+          <font>
+              <Font name="System Bold" size="24.0" />
+          </font>
+      </Label>
+    <TableView fx:id="itemTbl" layoutX="25.0" layoutY="72.0" nodeOrientation="LEFT_TO_RIGHT" prefHeight="256.0" prefWidth="548.0" style="-fx-background-color: #004d40;-fx-text-inner-color: white;" styleClass="table-row-cell" stylesheets="@style.css">
       <columns>
-        <TableColumn fx:id="startTimeCol" prefWidth="200.0" style="-fx-background-color: #004d40;-fx-text-inner-color: white;" text="Start Time" />
-        <TableColumn fx:id="endTimeCol" prefWidth="200.0" style="-fx-background-color: #004d40;-fx-text-inner-color: white;" text="End Time" />
+        <TableColumn fx:id="startTimeCol" prefWidth="190.0" style="-fx-background-color: #004d40;-fx-text-inner-color: white;" text="Start Time" />
+        <TableColumn fx:id="endTimeCol" prefWidth="190.0" style="-fx-background-color: #004d40;-fx-text-inner-color: white;" text="End Time" />
         <TableColumn fx:id="typeCol" prefWidth="75.0" style="-fx-background-color: #004d40;-fx-text-inner-color: white;" text="Type" />
-        <TableColumn fx:id="totalTimeCol" prefWidth="200.0" style="-fx-background-color: #004d40;-fx-text-inner-color: white;" text="HH:MM" />
+        <TableColumn fx:id="totalTimeCol" prefWidth="70.0" style="-fx-background-color: #004d40;-fx-text-inner-color: white;" text="HH:MM:SS" />
       </columns>
+         <effect>
+            <DropShadow />
+         </effect>
     </TableView>
+    <Button fx:id="startButton" disable="false" onAction="#backButtonAction" layoutX="269.0" layoutY="343.0" styleClass="buttonActive" stylesheets="@style.css" text="Back" textFill="WHITE" />
   </children>
 </AnchorPane>
