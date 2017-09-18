@@ -1,7 +1,7 @@
 /*
-* To change this license header, choose License Headers in Project Properties.
-* To change this template file, choose Tools | Templates
-* and open the template in the editor.
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
 package com.equiniti.wfh.DBConnectivity;
 
@@ -27,7 +27,7 @@ public class PostgreSQLJDBC {
     public PostgreSQLJDBC() {
         try {
             Class.forName("org.postgresql.Driver");
-            c = DriverManager.getConnection("jdbc:postgresql://localhost:5432/wfh", "postgres", "Ramya1994");
+            c = DriverManager.getConnection("jdbc:postgresql://localhost:5432/wfh", "postgres", "password");
         } catch (ClassNotFoundException | SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             System.exit(0);
@@ -43,7 +43,7 @@ public class PostgreSQLJDBC {
                     + "select b.starttime, b.endtime, concat('Break')  as type, concat(DATE_PART('hour', b.endtime - b.starttime ) * 60, ':', DATE_PART('minute', b.endtime - b.starttime ), ':', cast(DATE_PART('second', b.endtime - b.starttime ) as int)) as total from break b where b.endtime is not null "
                     + " union "
                     + "select i.starttime, i.endtime, concat('Idle')  as type, concat(DATE_PART('hour', i.endtime - i.starttime ) * 60, ':', DATE_PART('minute', i.endtime - i.starttime ), ':', cast(DATE_PART('second', i.endtime - i.starttime ) as int)) as total from idle i where i.endtime is not null"
-                )) {
+            )) {
                 while (rs.next()) {
                     ReportData rd = new ReportData();
                     rd.startTime.setValue(rs.getTimestamp("starttime"));
@@ -62,16 +62,26 @@ public class PostgreSQLJDBC {
         return reportDataList;
     }
 
-    public int insertTimeTracker(Date startDate) throws SQLException {
+    public int insertUpdateTimeTracker(Date startDate, boolean isNewId) throws SQLException {
         int newId = 0;
         PreparedStatement preparedStatement = null;
-        String insertTableSQL = "INSERT INTO timetracker"
-                + "(empid, starttime) VALUES"
-                + "(?,?)";
+        String query="";
+        if (isNewId) {
+            query = "INSERT INTO timetracker"
+                    + "(empid, starttime) VALUES"
+                    + "(?,?)";
+        }
+        else{
+            //Select latest timetracker record based on emp id
+            //Update endtime to null
+            //insert a new effective hour entry
+            //TODO
+        }
+        
 
         try {
             Timestamp timestamp = new Timestamp(startDate.getTime());
-            preparedStatement = c.prepareStatement(insertTableSQL, Statement.RETURN_GENERATED_KEYS);
+            preparedStatement = c.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
 
             preparedStatement.setInt(1, 1920);
             preparedStatement.setTimestamp(2, timestamp);
@@ -125,9 +135,16 @@ public class PostgreSQLJDBC {
 
     public void update(int timeTrackerId, Date date, String tableName) {
         Timestamp timestamp = new Timestamp(date.getTime());
-        String insertTableSQL = "UPDATE " + tableName + " set endtime= ? WHERE id= ? and endtime is null";
+        String insertTableSQL = "";
+        if(tableName.equals("timetracker")){
+            insertTableSQL="UPDATE " + tableName + " set endtime= ? WHERE id= ? and endtime is null";
+        }else{
+            insertTableSQL="UPDATE " + tableName + " set endtime= ? WHERE timetrackerid= ? and endtime is null";
+        }
+        
 
         try {
+            System.out.println("heellldsopfjdsoijf "+timeTrackerId+" dsfdsfdsf "+tableName+" dsfdsf "+date);
             System.out.println(insertTableSQL);
             preparedStatement = c.prepareStatement(insertTableSQL);
 
@@ -143,5 +160,35 @@ public class PostgreSQLJDBC {
             System.out.println(e.getMessage());
 
         }
+    }
+
+    public int getLastSessionEffectiveHours() {
+        String query = "select max(id) as id from timetracker";
+        int seconds=0;
+
+        try {
+            System.out.println(query);
+            Statement st = c.createStatement();
+            ResultSet rs = st.executeQuery(query);
+            
+             while (rs.next()) {
+                    ReportData rd = new ReportData();
+                    int timeTrackerId = rs.getInt("id");
+                    
+                    query ="select DATE_PART('seconds', age(endtime,starttime ))  as hour from effective  where timetrackerid="+ timeTrackerId;
+                    st = c.createStatement();
+                    rs = st.executeQuery(query);
+                    while (rs.next()) {
+                        seconds+=rs.getInt("hour");
+                    }
+            }
+             
+             return seconds;
+        } catch (SQLException e) {
+
+            System.out.println(e.getMessage());
+
+        }
+        return seconds;
     }
 }

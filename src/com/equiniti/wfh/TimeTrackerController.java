@@ -78,13 +78,18 @@ public class TimeTrackerController implements Initializable {
         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss a");
         effectiveStartDate = new Date();
         System.out.println("Start Date : " + dateFormat.format(effectiveStartDate));
+        boolean isNewDay=timeTrackerDAO.isNewDay();
+        if(!isNewDay){
+            startButtonClickCount=1;
+        }
         if (startButtonClickCount < 1) {
+            timeTrackerDAO.startTimeTracker(effectiveStartDate, true);
             clockInLabel.setText(dateFormat.format(effectiveStartDate));
             startButtonClickCount++;
         } else {
+            timeTrackerDAO.startTimeTracker(effectiveStartDate, false);
             clockOutLabel.setText("");
         }
-        timeTrackerDAO.startTimeTracker(effectiveStartDate);
         effectiveStopDate=null;
         initializeDashboard(effectiveStartDate);
     }
@@ -101,7 +106,7 @@ public class TimeTrackerController implements Initializable {
         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss a");
         effectiveStopDate = new Date();
         System.out.println("Stop Date : " + dateFormat.format(effectiveStopDate));
-        timeTrackerDAO.stopTimeTracker(effectiveStartDate);
+        timeTrackerDAO.stopTimeTracker(effectiveStopDate);
         effectiveStartDate=null;
         clockOutLabel.setText(dateFormat.format(effectiveStopDate));
 //        initializeDashboard(effectiveStopDate);

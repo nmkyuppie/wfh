@@ -25,9 +25,9 @@ class TimeTrackerDAO {
     public TimeTrackerDAO(){
         postgreSQLJDBC = new PostgreSQLJDBC();
     }
-    void startTimeTracker(Date startDate) {
+    void startTimeTracker(Date startDate, boolean isNewId) {
         try{
-        timeTrackerId = postgreSQLJDBC.insertTimeTracker(startDate);
+        timeTrackerId = postgreSQLJDBC.insertUpdateTimeTracker(startDate, isNewId);
         System.out.println("Starting session @ "+startDate);
         startEffectiveHour(startDate);
         }catch(SQLException e){
@@ -44,8 +44,8 @@ class TimeTrackerDAO {
 
     void startBreak(Date breakStartDate) {
         try {
-            postgreSQLJDBC.insert(timeTrackerId, breakStartDate, BREAK_TABLE);
             stopEffectiveHour(breakStartDate);
+            postgreSQLJDBC.insert(timeTrackerId, breakStartDate, BREAK_TABLE);
             System.out.println("Starting break @ "+breakStartDate);
         } catch (SQLException ex) {
             Logger.getLogger(TimeTrackerDAO.class.getName()).log(Level.SEVERE, null, ex);
@@ -74,8 +74,8 @@ class TimeTrackerDAO {
 
     void startIdleHour(Date startDate) {
         try {
-            postgreSQLJDBC.insert(timeTrackerId, startDate, IDLE_TABLE);
             stopEffectiveHour(startDate);
+            postgreSQLJDBC.insert(timeTrackerId, startDate, IDLE_TABLE);
             System.out.println("Starting idle hour @ "+startDate);
         } catch (SQLException ex) {
             Logger.getLogger(TimeTrackerDAO.class.getName()).log(Level.SEVERE, null, ex);
@@ -86,6 +86,17 @@ class TimeTrackerDAO {
         System.out.println("Stopping idle hour @ "+stopDate);
         postgreSQLJDBC.update(timeTrackerId, stopDate, IDLE_TABLE);
         startEffectiveHour(stopDate);
+    }
+
+    boolean isNewDay() {
+        int seconds = postgreSQLJDBC.getLastSessionEffectiveHours();
+        System.out.println("secccc "+seconds);
+        if(seconds>=43200){
+            return true;
+        }
+        else{
+            return false;
+        }
     }
     
 }
