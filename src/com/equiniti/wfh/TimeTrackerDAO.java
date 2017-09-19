@@ -97,16 +97,11 @@ class TimeTrackerDAO {
         startEffectiveHour(stopDate);
     }
 
-    boolean isNewDay() {
+    int getLastSessionInSeconds() {
         int seconds = postgreSQLJDBC.getLastSessionEffectiveHours();
         setStarttime(postgreSQLJDBC.getStarttime());
         System.out.println("secccc "+seconds);
-        if(seconds>=43200 || seconds==-1){
-            return true;
-        }
-        else{
-            return false;
-        }
+        return seconds;
     }
 
     String getTotalIdle() {

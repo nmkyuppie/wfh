@@ -2,7 +2,7 @@
 * To change this license header, choose License Headers in Project Properties.
 * To change this template file, choose Tools | Templates
 * and open the template in the editor.
-*/
+ */
 package com.equiniti.wfh;
 
 import com.equiniti.wfh.util.Win32IdleTime;
@@ -38,34 +38,34 @@ public class TimeTrackerController implements Initializable {
 
     @FXML
     private Button startButton;
-    
+
     @FXML
     private Button stopButton;
-    
+
     @FXML
     private Button breakButton;
-    
+
     @FXML
     private Button reportButton;
-    
+
     @FXML
     private Label clockInLabel;
-    
+
     @FXML
     private Label clockOutLabel;
-    
+
     @FXML
     private Label breakLabel;
-    
+
     @FXML
     private Label idleLabel;
-            
+
     @FXML
     private Label effectiveHourCounterLabel;
-    
-    TimeTrackerDAO timeTrackerDAO=new TimeTrackerDAO();
-    Win32IdleTime win32IdleTime=null;
-    
+
+    TimeTrackerDAO timeTrackerDAO = new TimeTrackerDAO();
+    Win32IdleTime win32IdleTime = null;
+
     boolean isTimerActive, isIdleTime;
     private static int startButtonClickCount = 0;
     long effectiveHours = 0, effectiveMinutes = 0, effectiveSeconds = 0;
@@ -76,7 +76,7 @@ public class TimeTrackerController implements Initializable {
     Date breakStopDate;
     Timer countDownTimer;
     Timer isSystemAwakeTimer;
-    
+
     @FXML
     private void startButtonAction(ActionEvent event) {
         isTimerActive = true;
@@ -84,10 +84,18 @@ public class TimeTrackerController implements Initializable {
         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss a");
         effectiveStartDate = new Date();
         System.out.println("Start Date : " + dateFormat.format(effectiveStartDate));
-        boolean isNewDay=timeTrackerDAO.isNewDay();
-        if(!isNewDay){
+        int seconds = timeTrackerDAO.getLastSessionInSeconds();
+        boolean isNewDay = false;
+        if (seconds >= 43200 || seconds == -1) {
+            isNewDay = true;
+        }
+        if (!isNewDay) {
+            //seconds, idle , break
+            effectiveHours = (seconds % 86400) / 3600;
+            effectiveMinutes = ((seconds % 86400) % 3600) / 60 ;
+            effectiveSeconds = ((seconds % 86400) % 3600) % 60;
             clockInLabel.setText(timeTrackerDAO.getStarttime());
-            startButtonClickCount=1;
+            startButtonClickCount = 1;
         }
         if (startButtonClickCount < 1) {
             timeTrackerDAO.startTimeTracker(effectiveStartDate, true);
@@ -98,10 +106,12 @@ public class TimeTrackerController implements Initializable {
             System.out.println("clock out empty 1");
             clockOutLabel.setText("");
         }
-        effectiveStopDate=null;
+        idleLabel.setText(timeTrackerDAO.getTotalIdle() + " (HH:MM:SS)");
+        breakLabel.setText(timeTrackerDAO.getTotalBreak() + " (HH:MM:SS)");
+        effectiveStopDate = null;
         initializeDashboard(effectiveStartDate);
     }
-    
+
     @FXML
     private void stopButtonAction(ActionEvent event) {
         effectiveHours += currentDiffHours;
@@ -115,11 +125,11 @@ public class TimeTrackerController implements Initializable {
         effectiveStopDate = new Date();
         System.out.println("Stop Date : " + dateFormat.format(effectiveStopDate));
         timeTrackerDAO.stopTimeTracker(effectiveStopDate);
-        effectiveStartDate=null;
+        effectiveStartDate = null;
         clockOutLabel.setText(dateFormat.format(effectiveStopDate));
 //        initializeDashboard(effectiveStopDate);
     }
-    
+
     @FXML
     private void breakButtonAction(ActionEvent event) {
         if (breakButton.getText().equalsIgnoreCase("Break")) {
@@ -131,14 +141,14 @@ public class TimeTrackerController implements Initializable {
             isTimerActive = false;
             DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss a");
             breakStartDate = new Date();
-            if(isIdleTime){
-                timeTrackerDAO.startIdleHour(breakStartDate); 
+            if (isIdleTime) {
+                timeTrackerDAO.startIdleHour(breakStartDate);
                 isSystemAwake();
-                
-            }else{
-                timeTrackerDAO.startBreak(breakStartDate);    
+
+            } else {
+                timeTrackerDAO.startBreak(breakStartDate);
             }
-            breakStopDate=null;
+            breakStopDate = null;
             resetButtonStyles("BREAK");
 //            isSystemAwake();
         } else {
@@ -146,18 +156,18 @@ public class TimeTrackerController implements Initializable {
             resetButtonStyles("CONTINUE");
             DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss a");
             breakStopDate = new Date();
-            if(isIdleTime){
+            if (isIdleTime) {
                 timeTrackerDAO.stopIdleHour(breakStopDate);
-                idleLabel.setText(timeTrackerDAO.getTotalIdle()+" (HH:MM:SS)");
-                isIdleTime=false;
-            }else{
-                timeTrackerDAO.stopBreak(breakStopDate);  
-                breakLabel.setText(timeTrackerDAO.getTotalBreak()+" (HH:MM:SS)");
+                idleLabel.setText(timeTrackerDAO.getTotalIdle() + " (HH:MM:SS)");
+                isIdleTime = false;
+            } else {
+                timeTrackerDAO.stopBreak(breakStopDate);
+                breakLabel.setText(timeTrackerDAO.getTotalBreak() + " (HH:MM:SS)");
             }
-            if(isSystemAwakeTimer!=null){
+            if (isSystemAwakeTimer != null) {
                 isSystemAwakeTimer.cancel();
             }
-            breakStartDate=null;
+            breakStartDate = null;
             if (startButtonClickCount < 1) {
                 clockInLabel.setText(dateFormat.format(breakStopDate));
                 startButtonClickCount++;
@@ -168,7 +178,7 @@ public class TimeTrackerController implements Initializable {
             initializeDashboard(breakStopDate);
         }
     }
-    
+
     @FXML
     private void reportButtonAction(ActionEvent event) {
         System.out.println("in report button");
@@ -189,12 +199,13 @@ public class TimeTrackerController implements Initializable {
             e.printStackTrace();
         }
     }
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
 //        System.out.println("Yes");
     }
-    
+
     private void resetButtonStyles(String button) {
         if (button.equalsIgnoreCase("START")) {
             startButton.setDisable(true);
@@ -248,8 +259,7 @@ public class TimeTrackerController implements Initializable {
             reportButton.getStyleClass().remove("buttonActive");
         }
     }
-    
-    
+
     private void initializeDashboard(Date startDate) {
         System.out.println("yesss");
         Service<Void> service = new Service<Void>() {
@@ -266,7 +276,7 @@ public class TimeTrackerController implements Initializable {
                                 try {
                                     countDownTimer = new Timer();
                                     countDownTimer.scheduleAtFixedRate(new TimerTask() {
-                                        
+
                                         @Override
                                         public void run() {
                                             if (isTimerActive) {
@@ -276,8 +286,7 @@ public class TimeTrackerController implements Initializable {
 //                                                    if(win32IdleTime.getState()==Win32IdleTime.State.IDLE){
 //                                                        System.out.println("idle");
 //                                                    }
-                                                    
-                                                    
+
                                                     long diff = currentDate.getTime() - startDate.getTime();
                                                     currentDiffSeconds = diff / 1000 % 60;
                                                     currentDiffMinutes = diff / (60 * 1000) % 60;
@@ -295,14 +304,14 @@ public class TimeTrackerController implements Initializable {
                                                     String sec = (totalSec / 10 == 0) ? "0" + totalSec : "" + totalSec;
 //                                                    System.out.println(hr + " : " + min + " : " + sec);
                                                     effectiveHourCounterLabel.setText(hr + " : " + min + " : " + sec);
-                                                    Win32IdleTime win32IdleTime=new Win32IdleTime();
-                                                    if(win32IdleTime.getState()==Win32IdleTime.State.IDLE){
-                                                        isIdleTime=true;
+                                                    Win32IdleTime win32IdleTime = new Win32IdleTime();
+                                                    if (win32IdleTime.getState() == Win32IdleTime.State.IDLE) {
+                                                        isIdleTime = true;
                                                         breakButtonAction(new ActionEvent());
                                                         countDownTimer.cancel();
                                                     }
                                                 });
-                                                
+
                                             } else {
                                                 countDownTimer.cancel();
                                             }
@@ -322,7 +331,7 @@ public class TimeTrackerController implements Initializable {
         };
         service.start();
     }
-    
+
     private void isSystemAwake() {
         Service<Void> service = new Service<Void>() {
             @Override
@@ -338,17 +347,17 @@ public class TimeTrackerController implements Initializable {
                                 try {
                                     isSystemAwakeTimer = new Timer();
                                     isSystemAwakeTimer.scheduleAtFixedRate(new TimerTask() {
-                                        
+
                                         @Override
                                         public void run() {
                                             Platform.runLater(() -> {
-                                                Win32IdleTime win32IdleTime=new Win32IdleTime();
-                                                if(win32IdleTime.getState()==Win32IdleTime.State.ONLINE){
+                                                Win32IdleTime win32IdleTime = new Win32IdleTime();
+                                                if (win32IdleTime.getState() == Win32IdleTime.State.ONLINE) {
                                                     isSystemAwakeTimer.cancel();
                                                     breakButtonAction(new ActionEvent());
                                                 }
                                             });
-                                            
+
                                         }
                                     }, 0, 1000);
                                 } finally {

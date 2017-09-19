@@ -77,7 +77,6 @@ public class PostgreSQLJDBC {
         int newId = 0;
         Timestamp timestamp = new Timestamp(startDate.getTime());
         System.out.println("timestamp " + timestamp);
-        PreparedStatement preparedStatement = null;
         String query = "";
         ResultSet rs = null;
         if (isNewId) {
@@ -213,7 +212,7 @@ public class PostgreSQLJDBC {
 
     public String getTotalIdle(int timeTrackerId) {
         try {
-            String query = "select concat(DATE_PART('hour', sum(endtime -starttime) ), ' : ', DATE_PART('minute', sum(endtime - starttime) ),' : ', cast(DATE_PART('second', sum(endtime - starttime)) as int)) as total from idle where timetrackerid=?";
+            String query = "select concat(lpad(DATE_PART('hour', sum(endtime -starttime) )::text,2,'0'), ':', lpad(DATE_PART('minute', sum(endtime - starttime) )::text,2,'0'),':', lpad(cast(DATE_PART('second', sum(endtime - starttime)) as int)::text,2,'0')) as total from idle where timetrackerid=?";
             PreparedStatement ps = c.prepareStatement(query);
             ps.setInt(1, timeTrackerId);
             ResultSet rs = ps.executeQuery();
@@ -229,7 +228,7 @@ public class PostgreSQLJDBC {
 
     public String getTotalBreak(int timeTrackerId) {
         try {
-            String query = "select concat(DATE_PART('hour', sum(endtime -starttime) ), ' : ', DATE_PART('minute', sum(endtime - starttime) ),' : ', cast(DATE_PART('second', sum(endtime - starttime)) as int)) as total from break where timetrackerid=?";
+            String query = "select concat(lpad(DATE_PART('hour', sum(endtime -starttime) )::text,2,'0'), ':', lpad(DATE_PART('minute', sum(endtime - starttime) )::text,2,'0'),':', lpad(cast(DATE_PART('second', sum(endtime - starttime)) as int)::text,2,'0')) as total from break where timetrackerid=?";
             PreparedStatement ps = c.prepareStatement(query);
             ps.setInt(1, timeTrackerId);
             ResultSet rs = ps.executeQuery();
