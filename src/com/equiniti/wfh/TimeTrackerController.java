@@ -83,7 +83,6 @@ public class TimeTrackerController implements Initializable {
         resetButtonStyles("START");
         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss a");
         effectiveStartDate = new Date();
-        System.out.println("Start Date : " + dateFormat.format(effectiveStartDate));
         int seconds = timeTrackerDAO.getLastSessionInSeconds();
         boolean isNewDay = false;
         if (seconds >= 43200 || seconds == -1) {
@@ -103,7 +102,6 @@ public class TimeTrackerController implements Initializable {
             startButtonClickCount++;
         } else {
             timeTrackerDAO.startTimeTracker(effectiveStartDate, false);
-            System.out.println("clock out empty 1");
             clockOutLabel.setText("");
         }
         idleLabel.setText(timeTrackerDAO.getTotalIdle() + " (HH:MM:SS)");
@@ -123,7 +121,6 @@ public class TimeTrackerController implements Initializable {
         resetButtonStyles("STOP");
         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss a");
         effectiveStopDate = new Date();
-        System.out.println("Stop Date : " + dateFormat.format(effectiveStopDate));
         timeTrackerDAO.stopTimeTracker(effectiveStopDate);
         effectiveStartDate = null;
         clockOutLabel.setText(dateFormat.format(effectiveStopDate));
@@ -172,7 +169,6 @@ public class TimeTrackerController implements Initializable {
                 clockInLabel.setText(dateFormat.format(breakStopDate));
                 startButtonClickCount++;
             } else {
-                System.out.println("clock out empty 2");
                 clockOutLabel.setText("");
             }
             initializeDashboard(breakStopDate);
@@ -181,7 +177,6 @@ public class TimeTrackerController implements Initializable {
 
     @FXML
     private void reportButtonAction(ActionEvent event) {
-        System.out.println("in report button");
         try {
             FXMLLoader fxmlLoader = new FXMLLoader();
             fxmlLoader.setLocation(getClass().getResource("ReportUI.fxml"));
@@ -202,10 +197,8 @@ public class TimeTrackerController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
-//        System.out.println("Yes");
     }
-
+    
     private void resetButtonStyles(String button) {
         if (button.equalsIgnoreCase("START")) {
             startButton.setDisable(true);
@@ -261,7 +254,6 @@ public class TimeTrackerController implements Initializable {
     }
 
     private void initializeDashboard(Date startDate) {
-        System.out.println("yesss");
         Service<Void> service = new Service<Void>() {
             @Override
             protected Task<Void> createTask() {
@@ -282,11 +274,6 @@ public class TimeTrackerController implements Initializable {
                                             if (isTimerActive) {
                                                 Platform.runLater(() -> {
                                                     Date currentDate = new Date();
-//                                                    win32IdleTime=Win32IdleTime.getInstance();
-//                                                    if(win32IdleTime.getState()==Win32IdleTime.State.IDLE){
-//                                                        System.out.println("idle");
-//                                                    }
-
                                                     long diff = currentDate.getTime() - startDate.getTime();
                                                     currentDiffSeconds = diff / 1000 % 60;
                                                     currentDiffMinutes = diff / (60 * 1000) % 60;
@@ -302,7 +289,6 @@ public class TimeTrackerController implements Initializable {
                                                     String hr = (totalHr / 10 == 0) ? "0" + totalHr : "" + totalHr;
                                                     String min = (totalMin / 10 == 0) ? "0" + totalMin : "" + totalMin;
                                                     String sec = (totalSec / 10 == 0) ? "0" + totalSec : "" + totalSec;
-//                                                    System.out.println(hr + " : " + min + " : " + sec);
                                                     effectiveHourCounterLabel.setText(hr + " : " + min + " : " + sec);
                                                     Win32IdleTime win32IdleTime = new Win32IdleTime();
                                                     if (win32IdleTime.getState() == Win32IdleTime.State.IDLE) {

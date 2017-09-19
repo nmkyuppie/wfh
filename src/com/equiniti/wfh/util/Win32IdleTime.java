@@ -24,7 +24,6 @@ public class Win32IdleTime {
         }
         State state = State.UNKNOWN;
         DateFormat dateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss");
-//        for (;;) {
             int idleSec = getIdleTimeMillisWin32() / 1000;
             State newState
                     = idleSec < 5 ? State.ONLINE
@@ -32,13 +31,7 @@ public class Win32IdleTime {
             if (newState != state) {
                 state = newState;
                 setState(state);
-//                System.out.println(dateFormat.format(new Date()) + " # " + state);
             }
-//            try {
-//                Thread.sleep(1000);
-//            } catch (Exception ex) {
-//            }
-//        }
     }
 
     public void setState(State state) {
@@ -109,14 +102,11 @@ public class Win32IdleTime {
     };
 
     public static Win32IdleTime getInstance() {
-            System.out.println("qnot null");
         if(win32IdleTime!=null){
-            System.out.println("not null");
             return win32IdleTime;
         }
         else{
             win32IdleTime=new Win32IdleTime();
-            System.out.println(" null");
             return win32IdleTime;
         }
     }

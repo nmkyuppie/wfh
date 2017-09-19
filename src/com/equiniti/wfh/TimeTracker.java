@@ -5,8 +5,6 @@
  */
 package com.equiniti.wfh;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -25,9 +23,6 @@ public class TimeTracker extends Application {
     public static Stage parentWindow;
     @Override
     public void start(Stage stage) throws Exception {
-//        postgreSQLJDBC = new PostgreSQLJDBC();
-//        WindowMonitorThread wmt=new WindowMonitorThread();
-//        wmt.start();
         parentWindow = stage;
         FXMLLoader loader = new FXMLLoader();
         root = loader.load(getClass().getResource("TimeTrackerDocument.fxml"));
@@ -37,7 +32,6 @@ public class TimeTracker extends Application {
         scene.getStylesheets().add(TimeTracker.class.getResource("style.css").toExternalForm());
         stage.setScene(scene);
         controller = new TimeTrackerController();
-        System.out.println("contr "+controller);
         stage.setResizable(false);
         stage.setAlwaysOnTop(true);
         stage.show();
@@ -51,11 +45,7 @@ public class TimeTracker extends Application {
 
     @Override
     public void stop(){
-        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss a");
-        Date stopDate = new Date();
-        System.out.println("Stop Date : app close?!" + dateFormat.format(stopDate));
-        controller.timeTrackerDAO.stopTimeTracker(stopDate);
-        //controller. - Stop Event, If there is no previous stop
+        controller.timeTrackerDAO.stopTimeTracker(new Date());
     }
 
 

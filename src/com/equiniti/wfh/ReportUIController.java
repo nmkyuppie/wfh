@@ -54,9 +54,7 @@ public class ReportUIController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        System.out.println("report fxml");
         assert itemTbl != null : "fx:id=\"itemTbl\" was not injected: check your FXML file 'ReportUI.fxml'.";
-        System.out.println("itemTbl "+itemTbl); 
      startTimeCol.setCellValueFactory(
         new PropertyValueFactory<>("startTime"));        
     endTimeCol.setCellValueFactory(                
@@ -69,7 +67,6 @@ public class ReportUIController implements Initializable {
             itemTbl.setItems(data);
             List<ReportData> reportDataList = new PostgreSQLJDBC().populateListOfTopics();
             data.addAll(reportDataList);
-//            System.out.println("table.getItems().size() "+table.getItems().size());
     }
 
     @FXML

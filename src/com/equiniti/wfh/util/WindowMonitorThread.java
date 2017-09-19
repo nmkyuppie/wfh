@@ -14,7 +14,6 @@ public class WindowMonitorThread extends Thread{
     Win32IdleTime win32IdleTime;
     @Override
     public void run() {
-        System.out.println("Hi ");
         win32IdleTime = Win32IdleTime.getInstance();
         
     }
