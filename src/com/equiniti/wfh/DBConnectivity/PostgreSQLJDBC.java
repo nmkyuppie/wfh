@@ -104,11 +104,11 @@ public class PostgreSQLJDBC {
                 newId = rs.getInt("id");
             }
             System.out.println("tt ID " + newId);
-            query = "update timetracker set starttime=?, endtime=? where id=?";
+            
+            query = "update timetracker set endtime=? where id=?";
             preparedStatement = c.prepareStatement(query);
-            preparedStatement.setTimestamp(1, timestamp);
-            preparedStatement.setTimestamp(2, null);
-            preparedStatement.setInt(3, newId);
+            preparedStatement.setTimestamp(1, null);
+            preparedStatement.setInt(2, newId);
             preparedStatement.executeUpdate();
             //Select latest timetracker record based on emp id
             //Update endtime to null
@@ -185,12 +185,17 @@ public class PostgreSQLJDBC {
                 int timeTrackerId = rs.getInt("id");
                 System.out.println("inside while "+timeTrackerId);
                 if (timeTrackerId > 0) {
-                    query = "select DATE_PART('seconds', age(endtime,starttime ))  as hour, to_char(starttime,'DD/MM/YYYY HH12:MM:SS AM') as starttime from effective  where timetrackerid=" + timeTrackerId;
+                    query = "select DATE_PART('seconds', age(endtime,starttime ))  as hour from effective  where timetrackerid=" + timeTrackerId;
                     st = c.createStatement();
                     rs = st.executeQuery(query);
                     while (rs.next()) {
                         seconds += rs.getInt("hour");
+                    }
+                    query = "select to_char(starttime,'DD/MM/YYYY HH12:MI:SS AM') as starttime from timetracker where id="+timeTrackerId;
+                    rs=st.executeQuery(query);
+                    while(rs.next()){
                         starttime = rs.getString("starttime");
+                        System.out.println("last starttime"+starttime);
                     }
                 } else {
                     return -1;
