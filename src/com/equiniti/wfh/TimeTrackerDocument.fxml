@@ -55,7 +55,7 @@
                 <Font name="System Bold" size="16.0" />
             </font>
         </Label>
-        <Label layoutX="130.0" layoutY="286.0" text="02 : 45 (HH:MM)" textFill="#004d40">
+        <Label fx:id="breakLabel" layoutX="130.0" layoutY="286.0" text="00 : 00 : 00 (HH:MM:SS)" textFill="#004d40">
             <font>
                 <Font name="System Bold" size="16.0" />
             </font>
@@ -65,7 +65,7 @@
                 <Font name="System Bold" size="16.0" />
             </font>
         </Label>
-        <Label layoutX="425.0" layoutY="286.0" text="01 : 12 (HH:MM)" textFill="#004d40">
+        <Label fx:id="idleLabel" layoutX="425.0" layoutY="286.0" text="00 : 00 : 00 (HH:MM:SS)" textFill="#004d40">
             <font>
                 <Font name="System Bold" size="16.0" />
             </font>

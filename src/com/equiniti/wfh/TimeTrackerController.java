@@ -55,6 +55,12 @@ public class TimeTrackerController implements Initializable {
     private Label clockOutLabel;
     
     @FXML
+    private Label breakLabel;
+    
+    @FXML
+    private Label idleLabel;
+            
+    @FXML
     private Label effectiveHourCounterLabel;
     
     TimeTrackerDAO timeTrackerDAO=new TimeTrackerDAO();
@@ -80,6 +86,7 @@ public class TimeTrackerController implements Initializable {
         System.out.println("Start Date : " + dateFormat.format(effectiveStartDate));
         boolean isNewDay=timeTrackerDAO.isNewDay();
         if(!isNewDay){
+            clockInLabel.setText(timeTrackerDAO.getStarttime());
             startButtonClickCount=1;
         }
         if (startButtonClickCount < 1) {
@@ -88,6 +95,7 @@ public class TimeTrackerController implements Initializable {
             startButtonClickCount++;
         } else {
             timeTrackerDAO.startTimeTracker(effectiveStartDate, false);
+            System.out.println("clock out empty 1");
             clockOutLabel.setText("");
         }
         effectiveStopDate=null;
@@ -103,7 +111,7 @@ public class TimeTrackerController implements Initializable {
         effectiveMinutes = effectiveMinutes % 60;
         isTimerActive = false;
         resetButtonStyles("STOP");
-        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss a");
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss a");
         effectiveStopDate = new Date();
         System.out.println("Stop Date : " + dateFormat.format(effectiveStopDate));
         timeTrackerDAO.stopTimeTracker(effectiveStopDate);
@@ -139,11 +147,14 @@ public class TimeTrackerController implements Initializable {
             DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss a");
             breakStopDate = new Date();
             if(isIdleTime){
-                timeTrackerDAO.stopIdleHour(breakStopDate);  
-                isSystemAwakeTimer.cancel();
+                timeTrackerDAO.stopIdleHour(breakStopDate);
+                idleLabel.setText(timeTrackerDAO.getTotalIdle()+" (HH:MM:SS)");
                 isIdleTime=false;
             }else{
                 timeTrackerDAO.stopBreak(breakStopDate);  
+                breakLabel.setText(timeTrackerDAO.getTotalBreak()+" (HH:MM:SS)");
+            }
+            if(isSystemAwakeTimer!=null){
                 isSystemAwakeTimer.cancel();
             }
             breakStartDate=null;
@@ -151,6 +162,7 @@ public class TimeTrackerController implements Initializable {
                 clockInLabel.setText(dateFormat.format(breakStopDate));
                 startButtonClickCount++;
             } else {
+                System.out.println("clock out empty 2");
                 clockOutLabel.setText("");
             }
             initializeDashboard(breakStopDate);

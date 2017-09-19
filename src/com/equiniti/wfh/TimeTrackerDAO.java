@@ -7,6 +7,7 @@ package com.equiniti.wfh;
 
 import com.equiniti.wfh.DBConnectivity.PostgreSQLJDBC;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,12 +23,20 @@ class TimeTrackerDAO {
     final String BREAK_TABLE = "break";
     final String TIMETRACKER_TABLE = "timetracker";
     int timeTrackerId;
+    private String starttime;
+    public String getStarttime() {
+        return starttime;
+    }
+
+    public void setStarttime(String starttime) {
+        this.starttime = starttime;
+    }
     public TimeTrackerDAO(){
         postgreSQLJDBC = new PostgreSQLJDBC();
     }
     void startTimeTracker(Date startDate, boolean isNewId) {
         try{
-        timeTrackerId = postgreSQLJDBC.insertUpdateTimeTracker(startDate, isNewId);
+        timeTrackerId = postgreSQLJDBC.insertUpdateTimeTracker(startDate, isNewId, 1920);
         System.out.println("Starting session @ "+startDate);
         startEffectiveHour(startDate);
         }catch(SQLException e){
@@ -90,13 +99,22 @@ class TimeTrackerDAO {
 
     boolean isNewDay() {
         int seconds = postgreSQLJDBC.getLastSessionEffectiveHours();
+        setStarttime(postgreSQLJDBC.getStarttime());
         System.out.println("secccc "+seconds);
-        if(seconds>=43200){
+        if(seconds>=43200 || seconds==-1){
             return true;
         }
         else{
             return false;
         }
+    }
+
+    String getTotalIdle() {
+        return postgreSQLJDBC.getTotalIdle(timeTrackerId);
+    }
+
+    String getTotalBreak() {
+        return postgreSQLJDBC.getTotalBreak(timeTrackerId);
     }
     
 }
