@@ -36,7 +36,8 @@ public class TimeTracker extends Application {
 
         scene.getStylesheets().add(TimeTracker.class.getResource("style.css").toExternalForm());
         stage.setScene(scene);
-        controller = loader.getController();
+        controller = new TimeTrackerController();
+        System.out.println("contr "+controller);
         stage.setResizable(false);
         stage.setAlwaysOnTop(true);
         stage.show();
@@ -52,7 +53,8 @@ public class TimeTracker extends Application {
     public void stop(){
         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss a");
         Date stopDate = new Date();
-        System.out.println("Stop Date : " + dateFormat.format(stopDate));
+        System.out.println("Stop Date : app close?!" + dateFormat.format(stopDate));
+        controller.timeTrackerDAO.stopTimeTracker(stopDate);
         //controller. - Stop Event, If there is no previous stop
     }
 
