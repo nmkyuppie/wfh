@@ -16,6 +16,7 @@ import java.util.logging.Logger;
  * @author nachimm
  */
 class TimeTrackerDAO {
+
     PostgreSQLJDBC postgreSQLJDBC;
     final String EFFECTIVE_TABLE = "effective";
     final String IDLE_TABLE = "idle";
@@ -23,6 +24,7 @@ class TimeTrackerDAO {
     final String TIMETRACKER_TABLE = "timetracker";
     int timeTrackerId;
     private String starttime;
+
     public String getStarttime() {
         return starttime;
     }
@@ -30,14 +32,16 @@ class TimeTrackerDAO {
     public void setStarttime(String starttime) {
         this.starttime = starttime;
     }
-    public TimeTrackerDAO(){
+
+    public TimeTrackerDAO() {
         postgreSQLJDBC = new PostgreSQLJDBC();
     }
+
     void startTimeTracker(Date startDate, boolean isNewId) {
-        try{
-        timeTrackerId = postgreSQLJDBC.insertUpdateTimeTracker(startDate, isNewId, 1920);
-        startEffectiveHour(startDate);
-        }catch(SQLException e){
+        try {
+            timeTrackerId = postgreSQLJDBC.insertUpdateTimeTracker(startDate, isNewId, 1920);
+            startEffectiveHour(startDate);
+        } catch (SQLException e) {
             Logger.getLogger(TimeTrackerDAO.class.getName()).log(Level.SEVERE, null, e);
         }
         //startEffectiveHour(startDate);
@@ -101,5 +105,5 @@ class TimeTrackerDAO {
     String getTotalBreak() {
         return postgreSQLJDBC.getTotalBreak(timeTrackerId);
     }
-    
+
 }

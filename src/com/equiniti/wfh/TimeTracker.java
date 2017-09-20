@@ -21,6 +21,7 @@ public class TimeTracker extends Application {
     TimeTrackerController controller;
     Parent root;
     public static Stage parentWindow;
+
     @Override
     public void start(Stage stage) throws Exception {
         parentWindow = stage;
@@ -36,6 +37,7 @@ public class TimeTracker extends Application {
         stage.setAlwaysOnTop(true);
         stage.show();
     }
+
     /**
      * @param args the command line arguments
      */
@@ -44,9 +46,8 @@ public class TimeTracker extends Application {
     }
 
     @Override
-    public void stop(){
+    public void stop() {
         controller.timeTrackerDAO.stopTimeTracker(new Date());
     }
-
 
 }

@@ -32,41 +32,43 @@ import javafx.stage.Stage;
  * @author rajaser
  */
 public class ReportUIController implements Initializable {
-       @FXML
+
+    @FXML
     TableView<ReportData> itemTbl;
-    
+
     @FXML
     TableColumn startTimeCol;
-    
+
     @FXML
     TableColumn endTimeCol;
-    
+
     @FXML
     TableColumn typeCol;
-    
+
     @FXML
     TableColumn totalTimeCol;
 
     // The table's observableList
     ObservableList<ReportData> observableList;
+
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         assert itemTbl != null : "fx:id=\"itemTbl\" was not injected: check your FXML file 'ReportUI.fxml'.";
-     startTimeCol.setCellValueFactory(
-        new PropertyValueFactory<>("startTime"));        
-    endTimeCol.setCellValueFactory(                
-        new PropertyValueFactory<>("endTime"));
-    typeCol.setCellValueFactory(
-        new PropertyValueFactory<>("type"));        
-    totalTimeCol.setCellValueFactory(
-        new PropertyValueFactory<>("totalTime"));
-     ObservableList<ReportData> data = FXCollections.observableArrayList();
-            itemTbl.setItems(data);
-            List<ReportData> reportDataList = new PostgreSQLJDBC().populateListOfTopics();
-            data.addAll(reportDataList);
+        startTimeCol.setCellValueFactory(
+                new PropertyValueFactory<>("startTime"));
+        endTimeCol.setCellValueFactory(
+                new PropertyValueFactory<>("endTime"));
+        typeCol.setCellValueFactory(
+                new PropertyValueFactory<>("type"));
+        totalTimeCol.setCellValueFactory(
+                new PropertyValueFactory<>("totalTime"));
+        ObservableList<ReportData> data = FXCollections.observableArrayList();
+        itemTbl.setItems(data);
+        List<ReportData> reportDataList = new PostgreSQLJDBC().populateListOfTopics();
+        data.addAll(reportDataList);
     }
 
     @FXML

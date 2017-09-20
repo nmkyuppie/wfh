@@ -91,7 +91,7 @@ public class TimeTrackerController implements Initializable {
         if (!isNewDay) {
             //seconds, idle , break
             effectiveHours = (seconds % 86400) / 3600;
-            effectiveMinutes = ((seconds % 86400) % 3600) / 60 ;
+            effectiveMinutes = ((seconds % 86400) % 3600) / 60;
             effectiveSeconds = ((seconds % 86400) % 3600) % 60;
             clockInLabel.setText(timeTrackerDAO.getStarttime());
             startButtonClickCount = 1;
@@ -198,7 +198,7 @@ public class TimeTrackerController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
     }
-    
+
     private void resetButtonStyles(String button) {
         if (button.equalsIgnoreCase("START")) {
             startButton.setDisable(true);

@@ -25,7 +25,7 @@ public class PostgreSQLJDBC {
 
     Connection c = null;
     PreparedStatement preparedStatement = null;
-    private String starttime; 
+    private String starttime;
 
     public String getStarttime() {
         return starttime;
@@ -34,7 +34,7 @@ public class PostgreSQLJDBC {
     public void setStarttime(String starttime) {
         this.starttime = starttime;
     }
-    
+
     public PostgreSQLJDBC() {
         try {
             Class.forName("org.postgresql.Driver");
@@ -48,12 +48,13 @@ public class PostgreSQLJDBC {
     public List<ReportData> populateListOfTopics() {
         List<ReportData> reportDataList = new ArrayList();
         try {
-            try (Statement st = c.createStatement(); ResultSet rs = st.executeQuery("select e.starttime, e.endtime, concat('Effective') as type, concat(DATE_PART('hour', e.endtime - e.starttime ) * 60, ':', DATE_PART('minute', e.endtime - e.starttime ), ':', cast(DATE_PART('second', e.endtime - e.starttime ) as int)) as total from effective e where e.endtime is not null"
-                    + " union "
-                    + "select b.starttime, b.endtime, concat('Break')  as type, concat(DATE_PART('hour', b.endtime - b.starttime ) * 60, ':', DATE_PART('minute', b.endtime - b.starttime ), ':', cast(DATE_PART('second', b.endtime - b.starttime ) as int)) as total from break b where b.endtime is not null "
-                    + " union "
-                    + "select i.starttime, i.endtime, concat('Idle')  as type, concat(DATE_PART('hour', i.endtime - i.starttime ) * 60, ':', DATE_PART('minute', i.endtime - i.starttime ), ':', cast(DATE_PART('second', i.endtime - i.starttime ) as int)) as total from idle i where i.endtime is not null"
-            )) {
+            try (Statement st = c.createStatement();
+                    ResultSet rs = st.executeQuery("select e.starttime, e.endtime, concat('Effective') as type, concat(DATE_PART('hour', e.endtime - e.starttime ) * 60, ':', DATE_PART('minute', e.endtime - e.starttime ), ':', cast(DATE_PART('second', e.endtime - e.starttime ) as int)) as total from effective e where e.endtime is not null"
+                            + " union "
+                            + "select b.starttime, b.endtime, concat('Break')  as type, concat(DATE_PART('hour', b.endtime - b.starttime ) * 60, ':', DATE_PART('minute', b.endtime - b.starttime ), ':', cast(DATE_PART('second', b.endtime - b.starttime ) as int)) as total from break b where b.endtime is not null "
+                            + " union "
+                            + "select i.starttime, i.endtime, concat('Idle')  as type, concat(DATE_PART('hour', i.endtime - i.starttime ) * 60, ':', DATE_PART('minute', i.endtime - i.starttime ), ':', cast(DATE_PART('second', i.endtime - i.starttime ) as int)) as total from idle i where i.endtime is not null"
+                    )) {
                 while (rs.next()) {
                     ReportData rd = new ReportData();
                     rd.startTime.setValue(rs.getTimestamp("starttime"));
@@ -96,7 +97,7 @@ public class PostgreSQLJDBC {
             while (rs.next()) {
                 newId = rs.getInt("id");
             }
-            
+
             query = "update timetracker set endtime=? where id=?";
             preparedStatement = c.prepareStatement(query);
             preparedStatement.setTimestamp(1, null);
@@ -164,9 +165,9 @@ public class PostgreSQLJDBC {
                     while (rs.next()) {
                         seconds += rs.getInt("hour");
                     }
-                    query = "select to_char(starttime,'DD/MM/YYYY HH12:MI:SS AM') as starttime from timetracker where id="+timeTrackerId;
-                    rs=st.executeQuery(query);
-                    while(rs.next()){
+                    query = "select to_char(starttime,'DD/MM/YYYY HH12:MI:SS AM') as starttime from timetracker where id=" + timeTrackerId;
+                    rs = st.executeQuery(query);
+                    while (rs.next()) {
                         starttime = rs.getString("starttime");
                     }
                 } else {
@@ -187,13 +188,13 @@ public class PostgreSQLJDBC {
             PreparedStatement ps = c.prepareStatement(query);
             ps.setInt(1, timeTrackerId);
             ResultSet rs = ps.executeQuery();
-            while(rs.next()){
+            while (rs.next()) {
                 return rs.getString("total");
             }
         } catch (SQLException ex) {
             Logger.getLogger(PostgreSQLJDBC.class.getName()).log(Level.SEVERE, null, ex);
         }
-         return "00:00:00";
+        return "00:00:00";
     }
 
     public String getTotalBreak(int timeTrackerId) {
@@ -202,12 +203,12 @@ public class PostgreSQLJDBC {
             PreparedStatement ps = c.prepareStatement(query);
             ps.setInt(1, timeTrackerId);
             ResultSet rs = ps.executeQuery();
-            while(rs.next()){
+            while (rs.next()) {
                 return rs.getString("total");
             }
         } catch (SQLException ex) {
             Logger.getLogger(PostgreSQLJDBC.class.getName()).log(Level.SEVERE, null, ex);
         }
-         return "00:00:00";
+        return "00:00:00";
     }
 }
