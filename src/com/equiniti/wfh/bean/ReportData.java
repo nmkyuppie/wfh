@@ -6,6 +6,7 @@
 package com.equiniti.wfh.bean;
 
 import java.sql.Timestamp;
+import java.util.Comparator;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -16,10 +17,10 @@ import javafx.beans.property.SimpleStringProperty;
  */
 public class ReportData {
 
-    public ObjectProperty<Timestamp> startTime = new SimpleObjectProperty<>();
-    public ObjectProperty<Timestamp> endTime = new SimpleObjectProperty<>();
-    public SimpleStringProperty type = new SimpleStringProperty();
-    public SimpleStringProperty totalTime = new SimpleStringProperty();
+    private ObjectProperty<Timestamp> startTime = new SimpleObjectProperty<>();
+    private ObjectProperty<Timestamp> endTime = new SimpleObjectProperty<>();
+    private SimpleStringProperty type = new SimpleStringProperty();
+    private SimpleStringProperty totalTime = new SimpleStringProperty();
 
     public Timestamp getStartTime() {
         return startTime.get();
@@ -53,4 +54,11 @@ public class ReportData {
         this.totalTime.set(totalTime);
     }
 
+    public static Comparator<ReportData> ReportDataComparator
+            = (ReportData reportData1, ReportData reportData2) -> {
+                Timestamp startTime1 = reportData1.getStartTime();
+                Timestamp startTime2 = reportData2.getStartTime();
+                
+                return startTime1.compareTo(startTime2);
+            };
 }

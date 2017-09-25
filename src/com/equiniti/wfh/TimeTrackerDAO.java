@@ -17,34 +17,33 @@ import java.util.logging.Logger;
  */
 class TimeTrackerDAO {
 
-    PostgreSQLJDBC postgreSQLJDBC;
-    final String EFFECTIVE_TABLE = "effective";
-    final String IDLE_TABLE = "idle";
-    final String BREAK_TABLE = "break";
-    final String TIMETRACKER_TABLE = "timetracker";
+    private PostgreSQLJDBC postgreSQLJDBC;
+    private static TimeTrackerDAO timeTrackerDAO;
+    private final String EFFECTIVE_TABLE = "effective", IDLE_TABLE = "idle", BREAK_TABLE = "break", TIMETRACKER_TABLE = "timetracker";
+    private final int EMP_ID=1920;
     int timeTrackerId;
-    private String starttime;
+    private String startTime;
 
-    public String getStarttime() {
-        return starttime;
+    private TimeTrackerDAO() {
+        postgreSQLJDBC = PostgreSQLJDBC.getInstance();
     }
 
-    public void setStarttime(String starttime) {
-        this.starttime = starttime;
-    }
-
-    public TimeTrackerDAO() {
-        postgreSQLJDBC = new PostgreSQLJDBC();
+    public static TimeTrackerDAO getInstance() {
+        if (timeTrackerDAO != null) {
+            return timeTrackerDAO;
+        } else {
+            timeTrackerDAO = new TimeTrackerDAO();
+            return timeTrackerDAO;
+        }
     }
 
     void startTimeTracker(Date startDate, boolean isNewId) {
         try {
-            timeTrackerId = postgreSQLJDBC.insertUpdateTimeTracker(startDate, isNewId, 1920);
+            timeTrackerId = postgreSQLJDBC.insertUpdateTimeTracker(startDate, isNewId, EMP_ID);
             startEffectiveHour(startDate);
         } catch (SQLException e) {
             Logger.getLogger(TimeTrackerDAO.class.getName()).log(Level.SEVERE, null, e);
         }
-        //startEffectiveHour(startDate);
     }
 
     void stopTimeTracker(Date stopDate) {
@@ -78,32 +77,40 @@ class TimeTrackerDAO {
         postgreSQLJDBC.update(timeTrackerId, stopDate, EFFECTIVE_TABLE);
     }
 
-    void startIdleHour(Date startDate) {
+    void startIdleHour(Date idleStartDate) {
         try {
-            stopEffectiveHour(startDate);
-            postgreSQLJDBC.insert(timeTrackerId, startDate, IDLE_TABLE);
+            stopEffectiveHour(idleStartDate);
+            postgreSQLJDBC.insert(timeTrackerId, idleStartDate, IDLE_TABLE);
         } catch (SQLException ex) {
             Logger.getLogger(TimeTrackerDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    void stopIdleHour(Date stopDate) {
-        postgreSQLJDBC.update(timeTrackerId, stopDate, IDLE_TABLE);
-        startEffectiveHour(stopDate);
+    void stopIdleHour(Date idleStopDate) {
+        postgreSQLJDBC.update(timeTrackerId, idleStopDate, IDLE_TABLE);
+        startEffectiveHour(idleStopDate);
     }
 
     int getLastSessionInSeconds() {
-        int seconds = postgreSQLJDBC.getLastSessionEffectiveHours();
-        setStarttime(postgreSQLJDBC.getStarttime());
+        int seconds = postgreSQLJDBC.getLastSessionEffectiveHours(EMP_ID);
+        setStartTime(postgreSQLJDBC.getStartTime());
         return seconds;
     }
 
     String getTotalIdle() {
-        return postgreSQLJDBC.getTotalIdle(timeTrackerId);
+        return postgreSQLJDBC.getTotalHours(timeTrackerId, IDLE_TABLE);
     }
 
     String getTotalBreak() {
-        return postgreSQLJDBC.getTotalBreak(timeTrackerId);
+        return postgreSQLJDBC.getTotalHours(timeTrackerId, BREAK_TABLE);
+    }
+
+    public String getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
     }
 
 }

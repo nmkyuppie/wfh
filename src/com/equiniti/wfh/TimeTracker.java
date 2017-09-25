@@ -18,23 +18,17 @@ import javafx.stage.Stage;
  */
 public class TimeTracker extends Application {
 
-    TimeTrackerController controller;
     Parent root;
     public static Stage parentWindow;
 
     @Override
     public void start(Stage stage) throws Exception {
         parentWindow = stage;
-        FXMLLoader loader = new FXMLLoader();
-        root = loader.load(getClass().getResource("TimeTrackerDocument.fxml"));
-
+        root = FXMLLoader.load(getClass().getResource("TimeTrackerDocument.fxml"));
         Scene scene = new Scene(root);
-
         scene.getStylesheets().add(TimeTracker.class.getResource("style.css").toExternalForm());
         stage.setScene(scene);
-        controller = new TimeTrackerController();
         stage.setResizable(false);
-        stage.setAlwaysOnTop(true);
         stage.show();
     }
 
@@ -47,7 +41,7 @@ public class TimeTracker extends Application {
 
     @Override
     public void stop() {
-        controller.timeTrackerDAO.stopTimeTracker(new Date());
+        TimeTrackerDAO.getInstance().stopTimeTracker(new Date());
     }
 
 }

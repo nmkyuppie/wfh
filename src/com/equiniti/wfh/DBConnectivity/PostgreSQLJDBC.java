@@ -23,45 +23,58 @@ import java.util.logging.Logger;
  */
 public class PostgreSQLJDBC {
 
-    Connection c = null;
-    PreparedStatement preparedStatement = null;
-    private String starttime;
-
-    public String getStarttime() {
-        return starttime;
+    private Connection connection = null;
+    private PreparedStatement preparedStatement = null;
+    private Statement statement = null;
+    private String startTime;
+    private static PostgreSQLJDBC postgreSQLJDBC = null;
+    
+    public String getStartTime() {
+        return startTime;
     }
 
-    public void setStarttime(String starttime) {
-        this.starttime = starttime;
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
     }
 
-    public PostgreSQLJDBC() {
+    private PostgreSQLJDBC() {
         try {
             Class.forName("org.postgresql.Driver");
-            c = DriverManager.getConnection("jdbc:postgresql://localhost:5432/wfh", "postgres", "Ramya1994");
+            connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/wfh", "postgres", "Ramya1994");
         } catch (ClassNotFoundException | SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             System.exit(0);
         }
     }
+    
+    public static PostgreSQLJDBC getInstance(){
+        if(postgreSQLJDBC!=null)
+            return postgreSQLJDBC;
+        else{
+            postgreSQLJDBC = new PostgreSQLJDBC();
+            return postgreSQLJDBC;
+        }
+    }
 
-    public List<ReportData> populateListOfTopics() {
+    public List<ReportData> getReportDataList() {
         List<ReportData> reportDataList = new ArrayList();
         try {
-            try (Statement st = c.createStatement();
-                    ResultSet rs = st.executeQuery("select e.starttime, e.endtime, concat('Effective') as type, concat(DATE_PART('hour', e.endtime - e.starttime ) * 60, ':', DATE_PART('minute', e.endtime - e.starttime ), ':', cast(DATE_PART('second', e.endtime - e.starttime ) as int)) as total from effective e where e.endtime is not null"
-                            + " union "
-                            + "select b.starttime, b.endtime, concat('Break')  as type, concat(DATE_PART('hour', b.endtime - b.starttime ) * 60, ':', DATE_PART('minute', b.endtime - b.starttime ), ':', cast(DATE_PART('second', b.endtime - b.starttime ) as int)) as total from break b where b.endtime is not null "
-                            + " union "
-                            + "select i.starttime, i.endtime, concat('Idle')  as type, concat(DATE_PART('hour', i.endtime - i.starttime ) * 60, ':', DATE_PART('minute', i.endtime - i.starttime ), ':', cast(DATE_PART('second', i.endtime - i.starttime ) as int)) as total from idle i where i.endtime is not null"
-                    )) {
-                while (rs.next()) {
-                    ReportData rd = new ReportData();
-                    rd.startTime.setValue(rs.getTimestamp("starttime"));
-                    rd.endTime.setValue(rs.getTimestamp("endtime"));
-                    rd.type.setValue(rs.getString("type"));
-                    rd.totalTime.setValue(rs.getString("total"));
-                    reportDataList.add(rd);
+            String query = new StringBuilder().append("select e.starttime, e.endtime, concat('Effective') as type, concat(DATE_PART('hour', e.endtime - e.starttime ) * 60, ':', DATE_PART('minute', e.endtime - e.starttime ), ':', cast(DATE_PART('second', e.endtime - e.starttime ) as int)) as total from effective e where e.endtime is not null")
+                    .append(" union ")
+                    .append("select b.starttime, b.endtime, concat('Break')  as type, concat(DATE_PART('hour', b.endtime - b.starttime ) * 60, ':', DATE_PART('minute', b.endtime - b.starttime ), ':', cast(DATE_PART('second', b.endtime - b.starttime ) as int)) as total from break b where b.endtime is not null")
+                    .append(" union ")
+                    .append("select i.starttime, i.endtime, concat('Idle')  as type, concat(DATE_PART('hour', i.endtime - i.starttime ) * 60, ':', DATE_PART('minute', i.endtime - i.starttime ), ':', cast(DATE_PART('second', i.endtime - i.starttime ) as int)) as total from idle i where i.endtime is not null")
+                    .toString();
+            
+            try (Statement statementObject = connection.createStatement();
+                    ResultSet resultSet = statementObject.executeQuery(query)) {
+                while (resultSet.next()) {
+                    ReportData reportData = new ReportData();
+                    reportData.setStartTime(resultSet.getTimestamp("starttime"));
+                    reportData.setEndTime(resultSet.getTimestamp("endtime"));
+                    reportData.setType(resultSet.getString("type"));
+                    reportData.setTotalTime(resultSet.getString("total"));
+                    reportDataList.add(reportData);
                 }
             }
 
@@ -74,7 +87,7 @@ public class PostgreSQLJDBC {
     }
 
     public int insertUpdateTimeTracker(Date startDate, boolean isNewId, int empid) throws SQLException {
-        int newId = 0;
+        int timetrackerId = 0;
         Timestamp timestamp = new Timestamp(startDate.getTime());
         String query = "";
         ResultSet rs = null;
@@ -82,39 +95,41 @@ public class PostgreSQLJDBC {
             query = "INSERT INTO timetracker"
                     + "(empid, starttime) VALUES"
                     + "(?,?)";
-            preparedStatement = c.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+            preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             preparedStatement.setInt(1, empid);
             preparedStatement.setTimestamp(2, timestamp);
             preparedStatement.executeUpdate();
             rs = preparedStatement.getGeneratedKeys();
             if (rs.next()) {
-                newId = rs.getInt(1);
+                timetrackerId = rs.getInt(1);
             }
         } else {
             query = "SELECT MAX(id) as id from timetracker";
-            Statement st = c.createStatement();
+            Statement st = connection.createStatement();
             rs = st.executeQuery(query);
-            while (rs.next()) {
-                newId = rs.getInt("id");
+            if (rs.next()) {
+                timetrackerId = rs.getInt("id");
             }
 
             query = "update timetracker set endtime=? where id=?";
-            preparedStatement = c.prepareStatement(query);
+            preparedStatement = connection.prepareStatement(query);
             preparedStatement.setTimestamp(1, null);
-            preparedStatement.setInt(2, newId);
+            preparedStatement.setInt(2, timetrackerId);
             preparedStatement.executeUpdate();
         }
-        return newId;
+        return timetrackerId;
     }
 
     public void insert(int id, Date date, String tableName) throws SQLException {
         Timestamp timestamp = new Timestamp(date.getTime());
-        String insertTableSQL = "INSERT INTO " + tableName
-                + "(timetrackerid, starttime) VALUES"
-                + "(?,?)";
+        String query = new StringBuilder()
+                .append("INSERT INTO ")
+                .append(tableName)
+                .append("(timetrackerid, starttime) VALUES")
+                .append("(?,?)").toString();
 
         try {
-            preparedStatement = c.prepareStatement(insertTableSQL);
+            preparedStatement = connection.prepareStatement(query);
 
             preparedStatement.setInt(1, id);
             preparedStatement.setTimestamp(2, timestamp);
@@ -128,15 +143,15 @@ public class PostgreSQLJDBC {
 
     public void update(int timeTrackerId, Date date, String tableName) {
         Timestamp timestamp = new Timestamp(date.getTime());
-        String insertTableSQL;
+        String query;
         if (tableName.equals("timetracker")) {
-            insertTableSQL = "UPDATE " + tableName + " set endtime= ? WHERE id= ? and endtime is null";
+            query = new StringBuilder().append("UPDATE ").append(tableName).append(" set endtime= ? WHERE id= ? and endtime is null").toString();
         } else {
-            insertTableSQL = "UPDATE " + tableName + " set endtime= ? WHERE timetrackerid= ? and endtime is null";
+            query = new StringBuilder().append("UPDATE ").append(tableName).append(" set endtime= ? WHERE timetrackerid= ? and endtime is null").toString();
         }
 
         try {
-            preparedStatement = c.prepareStatement(insertTableSQL);
+            preparedStatement = connection.prepareStatement(query);
             preparedStatement.setTimestamp(1, timestamp);
             preparedStatement.setInt(2, timeTrackerId);
             // execute insert SQL stetement
@@ -147,28 +162,27 @@ public class PostgreSQLJDBC {
         }
     }
 
-    public int getLastSessionEffectiveHours() {
-        String query = "select max(id) as id from timetracker";
+    public int getLastSessionEffectiveHours(int empid) {
+        String query = new StringBuilder().append("select max(id) as id from timetracker where empid=").append(empid).toString();
         int seconds = 0;
 
         try {
-            Statement st = c.createStatement();
-            ResultSet rs = st.executeQuery(query);
+            statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(query);
 
-            while (rs.next()) {
-                ReportData rd = new ReportData();
-                int timeTrackerId = rs.getInt("id");
+            if(resultSet.next()) {
+                int timeTrackerId = resultSet.getInt("id");
                 if (timeTrackerId > 0) {
-                    query = "select DATE_PART('seconds', age(endtime,starttime ))  as hour from effective  where timetrackerid=" + timeTrackerId;
-                    st = c.createStatement();
-                    rs = st.executeQuery(query);
-                    while (rs.next()) {
-                        seconds += rs.getInt("hour");
+                    query = new StringBuilder().append("select EXTRACT(EPOCH FROM (endtime-starttime )) as seconds from timetracker  where id=").append(timeTrackerId).toString();
+                    statement = connection.createStatement();
+                    resultSet = statement.executeQuery(query);
+                    while (resultSet.next()) {
+                        seconds += resultSet.getInt("seconds");
                     }
-                    query = "select to_char(starttime,'DD/MM/YYYY HH12:MI:SS AM') as starttime from timetracker where id=" + timeTrackerId;
-                    rs = st.executeQuery(query);
-                    while (rs.next()) {
-                        starttime = rs.getString("starttime");
+                    query = new StringBuilder().append("select to_char(starttime,'DD/MM/YYYY HH12:MI:SS AM') as starttime from timetracker where id=").append(timeTrackerId).toString();
+                    resultSet = statement.executeQuery(query);
+                    if(resultSet.next()) {
+                        startTime = resultSet.getString("starttime");
                     }
                 } else {
                     return -1;
@@ -182,29 +196,14 @@ public class PostgreSQLJDBC {
         return seconds;
     }
 
-    public String getTotalIdle(int timeTrackerId) {
+    public String getTotalHours(int timeTrackerId, String tableName) {
         try {
-            String query = "select concat(lpad(DATE_PART('hour', sum(endtime -starttime) )::text,2,'0'), ':', lpad(DATE_PART('minute', sum(endtime - starttime) )::text,2,'0'),':', lpad(cast(DATE_PART('second', sum(endtime - starttime)) as int)::text,2,'0')) as total from idle where timetrackerid=?";
-            PreparedStatement ps = c.prepareStatement(query);
+            String query = new StringBuilder().append("select concat(lpad(DATE_PART('hour', sum(endtime -starttime) )::text,2,'0'), ':', lpad(DATE_PART('minute', sum(endtime - starttime) )::text,2,'0'),':', lpad(cast(DATE_PART('second', sum(endtime - starttime)) as int)::text,2,'0')) as total from ").append(tableName).append(" where timetrackerid=?").toString();
+            PreparedStatement ps = connection.prepareStatement(query);
             ps.setInt(1, timeTrackerId);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                return rs.getString("total");
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(PostgreSQLJDBC.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return "00:00:00";
-    }
-
-    public String getTotalBreak(int timeTrackerId) {
-        try {
-            String query = "select concat(lpad(DATE_PART('hour', sum(endtime -starttime) )::text,2,'0'), ':', lpad(DATE_PART('minute', sum(endtime - starttime) )::text,2,'0'),':', lpad(cast(DATE_PART('second', sum(endtime - starttime)) as int)::text,2,'0')) as total from break where timetrackerid=?";
-            PreparedStatement ps = c.prepareStatement(query);
-            ps.setInt(1, timeTrackerId);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                return rs.getString("total");
+                return (rs.getString("total").equalsIgnoreCase("::"))?"00 : 00 : 00":rs.getString("total");
             }
         } catch (SQLException ex) {
             Logger.getLogger(PostgreSQLJDBC.class.getName()).log(Level.SEVERE, null, ex);

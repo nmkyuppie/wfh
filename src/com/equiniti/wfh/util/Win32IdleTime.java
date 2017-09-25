@@ -23,7 +23,6 @@ public class Win32IdleTime {
             System.exit(1);
         }
         State state = State.UNKNOWN;
-        DateFormat dateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss");
             int idleSec = getIdleTimeMillisWin32() / 1000;
             State newState
                     = idleSec < 5 ? State.ONLINE

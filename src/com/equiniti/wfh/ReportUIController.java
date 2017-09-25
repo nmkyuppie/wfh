@@ -9,6 +9,7 @@ import com.equiniti.wfh.DBConnectivity.PostgreSQLJDBC;
 import com.equiniti.wfh.bean.ReportData;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -67,16 +68,16 @@ public class ReportUIController implements Initializable {
                 new PropertyValueFactory<>("totalTime"));
         ObservableList<ReportData> data = FXCollections.observableArrayList();
         itemTbl.setItems(data);
-        List<ReportData> reportDataList = new PostgreSQLJDBC().populateListOfTopics();
+        List<ReportData> reportDataList = PostgreSQLJDBC.getInstance().getReportDataList();
+        Collections.sort(reportDataList, ReportData.ReportDataComparator);
         data.addAll(reportDataList);
     }
 
     @FXML
     private void backButtonAction(ActionEvent event) {
         Parent root = null;
-        FXMLLoader loader = new FXMLLoader();
         try {
-            root = loader.load(getClass().getResource("TimeTrackerDocument.fxml"));
+            root = FXMLLoader.load(getClass().getResource("TimeTrackerDocument.fxml"));
         } catch (IOException ex) {
             Logger.getLogger(ReportUIController.class.getName()).log(Level.SEVERE, null, ex);
         }
