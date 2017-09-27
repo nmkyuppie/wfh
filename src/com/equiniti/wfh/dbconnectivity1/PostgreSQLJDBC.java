@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.equiniti.wfh.DBConnectivity;
+package com.equiniti.wfh.dbconnectivity1;
 
 import com.equiniti.wfh.bean.ReportData;
 import java.sql.Connection;

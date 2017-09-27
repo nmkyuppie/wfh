@@ -5,7 +5,7 @@
  */
 package com.equiniti.wfh;
 
-import com.equiniti.wfh.DBConnectivity.PostgreSQLJDBC;
+import com.equiniti.wfh.dbconnectivity1.PostgreSQLJDBC;
 import com.equiniti.wfh.bean.ReportData;
 import java.io.IOException;
 import java.net.URL;

@@ -5,7 +5,9 @@
  */
 package com.equiniti.wfh;
 
-import com.equiniti.wfh.DBConnectivity.PostgreSQLJDBC;
+import com.equiniti.wfh.dbconnectivity1.PostgreSQLJDBC;
+import com.equiniti.wfh.filemanipulation.FileManipulation;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.logging.Level;
@@ -18,14 +20,16 @@ import java.util.logging.Logger;
 class TimeTrackerDAO {
 
     private PostgreSQLJDBC postgreSQLJDBC;
+    private FileManipulation fileManipulation;
     private static TimeTrackerDAO timeTrackerDAO;
     private final String EFFECTIVE_TABLE = "effective", IDLE_TABLE = "idle", BREAK_TABLE = "break", TIMETRACKER_TABLE = "timetracker";
-    private final int EMP_ID=1920;
+    private final int EMP_ID = 1920;
     int timeTrackerId;
     private String startTime;
 
     private TimeTrackerDAO() {
         postgreSQLJDBC = PostgreSQLJDBC.getInstance();
+        fileManipulation = new FileManipulation();
     }
 
     public static TimeTrackerDAO getInstance() {
@@ -40,55 +44,74 @@ class TimeTrackerDAO {
     void startTimeTracker(Date startDate, boolean isNewId) {
         try {
             timeTrackerId = postgreSQLJDBC.insertUpdateTimeTracker(startDate, isNewId, EMP_ID);
-            startEffectiveHour(startDate);
-        } catch (SQLException e) {
+            //startEffectiveHour(startDate);
+            fileManipulation.insertEffective(timeTrackerId, startDate);
+
+        } catch (SQLException | IOException e) {
             Logger.getLogger(TimeTrackerDAO.class.getName()).log(Level.SEVERE, null, e);
         }
     }
 
     void stopTimeTracker(Date stopDate) {
-        stopEffectiveHour(stopDate);
-        postgreSQLJDBC.update(timeTrackerId, stopDate, TIMETRACKER_TABLE);
+        try {
+            fileManipulation.updateEffective(timeTrackerId, stopDate);
+            postgreSQLJDBC.update(timeTrackerId, stopDate, TIMETRACKER_TABLE);
+        } catch (IOException ex) {
+            Logger.getLogger(TimeTrackerDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     void startBreak(Date breakStartDate) {
         try {
-            stopEffectiveHour(breakStartDate);
-            postgreSQLJDBC.insert(timeTrackerId, breakStartDate, BREAK_TABLE);
-        } catch (SQLException ex) {
+            fileManipulation.updateEffective(timeTrackerId, breakStartDate);
+            fileManipulation.insertBreak(timeTrackerId, breakStartDate);
+        } catch (IOException ex) {
             Logger.getLogger(TimeTrackerDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     void stopBreak(Date breakStopDate) {
-        postgreSQLJDBC.update(timeTrackerId, breakStopDate, BREAK_TABLE);
-        startEffectiveHour(breakStopDate);
-    }
-
-    void startEffectiveHour(Date startDate) {
         try {
-            postgreSQLJDBC.insert(timeTrackerId, startDate, EFFECTIVE_TABLE);
-        } catch (SQLException ex) {
+            fileManipulation.updateBreak(timeTrackerId, breakStopDate);
+            startEffectiveHour(breakStopDate);
+        } catch (IOException ex) {
             Logger.getLogger(TimeTrackerDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    private void stopEffectiveHour(Date stopDate) {
-        postgreSQLJDBC.update(timeTrackerId, stopDate, EFFECTIVE_TABLE);
+    void startEffectiveHour(Date startDate) {
+        try {
+            fileManipulation.insertEffective(timeTrackerId, startDate);
+        } catch (IOException ex) {
+            Logger.getLogger(TimeTrackerDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
+
+/*    private void stopEffectiveHour(Date stopDate) {
+        try {
+            fileManipulation.updateEffective(timeTrackerId, stopDate);
+        } catch (IOException ex) {
+            Logger.getLogger(TimeTrackerDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+*/
 
     void startIdleHour(Date idleStartDate) {
         try {
-            stopEffectiveHour(idleStartDate);
-            postgreSQLJDBC.insert(timeTrackerId, idleStartDate, IDLE_TABLE);
-        } catch (SQLException ex) {
+            fileManipulation.updateEffective(timeTrackerId, idleStartDate);
+            fileManipulation.insertIdle(timeTrackerId, idleStartDate);
+        } catch (IOException ex) {
             Logger.getLogger(TimeTrackerDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     void stopIdleHour(Date idleStopDate) {
-        postgreSQLJDBC.update(timeTrackerId, idleStopDate, IDLE_TABLE);
-        startEffectiveHour(idleStopDate);
+        try {
+            fileManipulation.updateIdle(timeTrackerId, idleStopDate);
+            fileManipulation.insertEffective(timeTrackerId, idleStopDate);
+        } catch (IOException ex) {
+            Logger.getLogger(TimeTrackerDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     int getLastSessionInSeconds() {

@@ -129,3 +129,6 @@ TABLESPACE pg_default;
 
 ALTER TABLE public.settings
     OWNER to postgres;
+
+insert into settings values('EFFECTIVE_TRACKER_STOP_TIME', '12:00');
+insert into settings values('DB_UPDATE_INTERVAL(IN MINUTES)', '60');
