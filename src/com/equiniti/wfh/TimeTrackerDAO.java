@@ -5,7 +5,7 @@
  */
 package com.equiniti.wfh;
 
-import com.equiniti.wfh.dbconnectivity1.PostgreSQLJDBC;
+import com.equiniti.wfh.dbconnectivity.PostgreSQLJDBC;
 import com.equiniti.wfh.filemanipulation.FileManipulation;
 import java.io.IOException;
 import java.sql.SQLException;

@@ -1,6 +1,6 @@
 package com.equiniti.wfh.filemanipulation;
 
-import com.equiniti.wfh.dbconnectivity1.PostgreSQLJDBC;
+import com.equiniti.wfh.dbconnectivity.PostgreSQLJDBC;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
