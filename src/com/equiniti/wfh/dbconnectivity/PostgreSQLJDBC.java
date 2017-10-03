@@ -5,6 +5,7 @@
  */
 package com.equiniti.wfh.dbconnectivity;
 
+import com.equiniti.wfh.bean.DatabaseData;
 import com.equiniti.wfh.bean.ReportData;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -12,7 +13,6 @@ import java.sql.ResultSet;
 import java.sql.*;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -28,7 +28,7 @@ public class PostgreSQLJDBC {
     private Statement statement = null;
     private String startTime;
     private static PostgreSQLJDBC postgreSQLJDBC = null;
-    
+
     public String getStartTime() {
         return startTime;
     }
@@ -46,11 +46,11 @@ public class PostgreSQLJDBC {
             System.exit(0);
         }
     }
-    
-    public static PostgreSQLJDBC getInstance(){
-        if(postgreSQLJDBC!=null)
+
+    public static PostgreSQLJDBC getInstance() {
+        if (postgreSQLJDBC != null) {
             return postgreSQLJDBC;
-        else{
+        } else {
             postgreSQLJDBC = new PostgreSQLJDBC();
             return postgreSQLJDBC;
         }
@@ -65,7 +65,7 @@ public class PostgreSQLJDBC {
                     .append(" union ")
                     .append("select i.starttime, i.endtime, concat('Idle')  as type, concat(DATE_PART('hour', i.endtime - i.starttime ) * 60, ':', DATE_PART('minute', i.endtime - i.starttime ), ':', cast(DATE_PART('second', i.endtime - i.starttime ) as int)) as total from idle i where i.endtime is not null")
                     .toString();
-            
+
             try (Statement statementObject = connection.createStatement();
                     ResultSet resultSet = statementObject.executeQuery(query)) {
                 while (resultSet.next()) {
@@ -86,42 +86,26 @@ public class PostgreSQLJDBC {
         return reportDataList;
     }
 
-    public int insertUpdateTimeTracker(Date startDate, boolean isNewId, int empid) throws SQLException {
+    public int insertTimeTracker(Date startDate, String empname) throws SQLException {
         int timetrackerId = 0;
         Timestamp timestamp = new Timestamp(startDate.getTime());
         String query = "";
-        ResultSet rs = null;
-        if (isNewId) {
-            query = "INSERT INTO timetracker"
-                    + "(empid, starttime) VALUES"
-                    + "(?,?)";
-            preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-            preparedStatement.setInt(1, empid);
-            preparedStatement.setTimestamp(2, timestamp);
-            preparedStatement.executeUpdate();
-            rs = preparedStatement.getGeneratedKeys();
-            if (rs.next()) {
-                timetrackerId = rs.getInt(1);
-            }
-        } else {
-            query = "SELECT MAX(id) as id from timetracker";
-            Statement st = connection.createStatement();
-            rs = st.executeQuery(query);
-            if (rs.next()) {
-                timetrackerId = rs.getInt("id");
-            }
-
-            query = "update timetracker set endtime=? where id=?";
-            preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setTimestamp(1, null);
-            preparedStatement.setInt(2, timetrackerId);
-            preparedStatement.executeUpdate();
+        query = "INSERT INTO timetracker"
+                + "(empname, date) VALUES"
+                + "(?,?)";
+        preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+        preparedStatement.setString(1, empname);
+        preparedStatement.setTimestamp(2, timestamp);
+        preparedStatement.executeUpdate();
+        ResultSet rs = preparedStatement.getGeneratedKeys();
+        if (rs.next()) {
+            timetrackerId = rs.getInt(1);
         }
         return timetrackerId;
     }
 
-    public void insert(int id, Date date, String tableName) throws SQLException {
-        Timestamp timestamp = new Timestamp(date.getTime());
+    public void insert(int id, Timestamp startTime, Timestamp endTime, String tableName) throws SQLException {
+        Timestamp timestamp = new Timestamp(startTime.getTime());
         String query = new StringBuilder()
                 .append("INSERT INTO ")
                 .append(tableName)
@@ -170,7 +154,7 @@ public class PostgreSQLJDBC {
             statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(query);
 
-            if(resultSet.next()) {
+            if (resultSet.next()) {
                 int timeTrackerId = resultSet.getInt("id");
                 if (timeTrackerId > 0) {
                     query = new StringBuilder().append("select EXTRACT(EPOCH FROM (endtime-starttime )) as seconds from timetracker  where id=").append(timeTrackerId).toString();
@@ -181,7 +165,7 @@ public class PostgreSQLJDBC {
                     }
                     query = new StringBuilder().append("select to_char(starttime,'DD/MM/YYYY HH12:MI:SS AM') as starttime from timetracker where id=").append(timeTrackerId).toString();
                     resultSet = statement.executeQuery(query);
-                    if(resultSet.next()) {
+                    if (resultSet.next()) {
                         startTime = resultSet.getString("starttime");
                     }
                 } else {
@@ -199,15 +183,55 @@ public class PostgreSQLJDBC {
     public String getTotalHours(int timeTrackerId, String tableName) {
         try {
             String query = new StringBuilder().append("select concat(lpad(DATE_PART('hour', sum(endtime -starttime) )::text,2,'0'), ':', lpad(DATE_PART('minute', sum(endtime - starttime) )::text,2,'0'),':', lpad(cast(DATE_PART('second', sum(endtime - starttime)) as int)::text,2,'0')) as total from ").append(tableName).append(" where timetrackerid=?").toString();
-            PreparedStatement ps = connection.prepareStatement(query);
-            ps.setInt(1, timeTrackerId);
-            ResultSet rs = ps.executeQuery();
+            preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, timeTrackerId);
+            ResultSet rs = preparedStatement.executeQuery();
             while (rs.next()) {
-                return (rs.getString("total").equalsIgnoreCase("::"))?"00 : 00 : 00":rs.getString("total");
+                return (rs.getString("total").equalsIgnoreCase("::")) ? "00 : 00 : 00" : rs.getString("total");
             }
         } catch (SQLException ex) {
             Logger.getLogger(PostgreSQLJDBC.class.getName()).log(Level.SEVERE, null, ex);
         }
         return "00:00:00";
+    }
+
+    public int getTimeTrackerId(String empName, Date date) throws SQLException {
+        int timeTrackerId = 0;
+        String query = new StringBuilder().append("select max(id) as id from timetracker where empname=? and date=?").toString();
+        preparedStatement = connection.prepareStatement(query);
+        preparedStatement.setString(1, empName);
+        preparedStatement.setDate(2, date);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        if (resultSet.next()) {
+            timeTrackerId = resultSet.getInt("id");
+        }
+        return timeTrackerId;
+    }
+
+    public void insertBatch(List<DatabaseData> effectiveDataList, List<DatabaseData> idleDataList, List<DatabaseData> breakDataList) throws SQLException {
+        if ((effectiveDataList != null && !effectiveDataList.isEmpty()) ||(idleDataList != null && !idleDataList.isEmpty()) || (breakDataList != null && !breakDataList.isEmpty())) {
+            String query = new StringBuilder().append("insert into effective(timetrackerid,starttime,endtime) values (?,?,?)").toString();
+            preparedStatement = connection.prepareStatement(query);
+            preparedStatement = addBatchQueries(effectiveDataList, preparedStatement);
+            preparedStatement.executeBatch();
+            query = new StringBuilder().append("insert into break(timetrackerid,starttime,endtime) values (?,?,?)").toString();
+            preparedStatement = connection.prepareStatement(query);
+            preparedStatement = addBatchQueries(breakDataList, preparedStatement);
+            preparedStatement.executeBatch();
+            query = new StringBuilder().append("insert into idle(timetrackerid,starttime,endtime) values (?,?,?)").toString();
+            preparedStatement = connection.prepareStatement(query);
+            preparedStatement = addBatchQueries(idleDataList, preparedStatement);
+            preparedStatement.executeBatch();
+        }
+    }
+
+    PreparedStatement addBatchQueries(List<DatabaseData> databaseDatas, PreparedStatement preparedStatement) throws SQLException {
+        for (DatabaseData databaseData : databaseDatas) {
+            preparedStatement.setInt(1, databaseData.getTimeTrackerId());
+            preparedStatement.setTimestamp(2, databaseData.getStartTime());
+            preparedStatement.setTimestamp(3, databaseData.getEndTime());
+            preparedStatement.addBatch();
+        }
+        return preparedStatement;
     }
 }

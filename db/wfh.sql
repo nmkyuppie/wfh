@@ -28,9 +28,8 @@ CREATE DATABASE wfh
 CREATE TABLE public.timetracker
 (
     id integer serial,
-    empid integer,
-    starttime timestamp without time zone,
-    endtime timestamp without time zone,
+    empname varchar(20),
+    date date,
     CONSTRAINT timetracker_pkey PRIMARY KEY (id)
 )
 WITH (

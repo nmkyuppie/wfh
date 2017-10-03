@@ -41,7 +41,7 @@ public class TimeTracker extends Application {
 
     @Override
     public void stop() {
-        TimeTrackerDAO.getInstance().stopTimeTracker(new Date());
+        TimeTrackerDAO.getInstance().stopTimeTracker(new java.sql.Date(new Date().getTime()));
     }
 
 }
